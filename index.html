@@ -1,0 +1,2275 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Álgebra Lineal II-26</title>
+<meta name="description" content="Espacios vectoriales y espacios con producto interno: teoría paso a paso, ejemplos resueltos y práctica resuelta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' },
+    options: { enableMenu: false },
+    startup: {
+      typeset: false,
+      ready: function () {
+        MathJax.startup.defaultReady();
+        MathJax.startup.promise.then(function () { document.dispatchEvent(new Event('mathjax-ready')); });
+      }
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Layout: una hoja de cuaderno por pantalla, centrada sobre papel milimetrado tenue;
+   barra superior mínima, navegación abajo y menú lateral plegable. */
+:root {
+  --bg: #eef1f4;
+  --sheet: #fbfcfd;
+  --bar: rgba(244, 246, 248, .86);
+  --ink: #27313b;
+  --muted: #687582;
+  --faint: #9aa5b0;
+  --line: #d9dfe6;
+  --grid: rgba(74, 114, 144, .055);
+  --shadow: rgba(39, 49, 59, .35);
+  --accent: #4a7290;
+  --accent-ink: #ffffff;
+  --def: #4a7290;   --def-bg: #eaf1f6;
+  --thm: #7d6896;   --thm-bg: #f1eef6;
+  --ex: #4b836a;    --ex-bg: #e9f3ee;
+  --obs: #9a7642;   --obs-bg: #f6f0e6;
+  --bad: #a95a54;   --bad-bg: #f7eceb;
+  --scrim: rgba(25, 32, 40, .32);
+  --fs: 1;
+  --f-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151a20; --sheet: #1c232b; --bar: rgba(24, 30, 37, .88);
+    --ink: #dde4ea; --muted: #9ba8b4; --faint: #6d7a87; --line: #2e3842;
+    --grid: rgba(143, 179, 207, .045); --shadow: rgba(0, 0, 0, .7);
+    --accent: #8fb3cf; --accent-ink: #13202b;
+    --def: #8fb3cf; --def-bg: #1f2c37;
+    --thm: #b8a3cf; --thm-bg: #282436;
+    --ex: #8bc4a8;  --ex-bg: #1d2e28;
+    --obs: #d3b17d; --obs-bg: #2e2820;
+    --bad: #e0a09a; --bad-bg: #352423;
+    --scrim: rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151a20; --sheet: #1c232b; --bar: rgba(24, 30, 37, .88);
+  --ink: #dde4ea; --muted: #9ba8b4; --faint: #6d7a87; --line: #2e3842;
+  --grid: rgba(143, 179, 207, .045); --shadow: rgba(0, 0, 0, .7);
+  --accent: #8fb3cf; --accent-ink: #13202b;
+  --def: #8fb3cf; --def-bg: #1f2c37;
+  --thm: #b8a3cf; --thm-bg: #282436;
+  --ex: #8bc4a8;  --ex-bg: #1d2e28;
+  --obs: #d3b17d; --obs-bg: #2e2820;
+  --bad: #e0a09a; --bad-bg: #352423;
+  --scrim: rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: calc(17px * var(--fs));
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.app { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
+
+/* ---------- barra superior ---------- */
+.bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  min-width: 0;
+}
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 36px; min-width: 36px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: transparent; cursor: pointer;
+  font-size: 14px; color: var(--ink);
+  transition: background .15s, border-color .15s;
+}
+.icon-btn:hover { background: var(--def-bg); border-color: var(--faint); }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.crumb {
+  flex: 1; min-width: 0;
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: 14px; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.crumb b { color: var(--ink); font-weight: 600; }
+.crumb .sep { color: var(--faint); }
+.tools { display: flex; gap: 6px; }
+@media (max-width: 560px) {
+  .crumb .grp, .crumb .sep { display: none; }
+  .hide-sm { display: none !important; }
+}
+
+/* ---------- escenario ---------- */
+.stage { overflow-y: auto; overflow-x: hidden; padding: 32px 16px 56px; scroll-behavior: smooth; }
+.sheet {
+  max-width: 840px; margin: 0 auto;
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: clamp(22px, 5vw, 56px);
+  box-shadow: 0 30px 60px -45px var(--shadow);
+  min-width: 0;
+}
+.slide { min-width: 0; }
+.slide.enter { animation: enter .35s ease both; }
+@keyframes enter { from { opacity: .0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .slide.enter { animation: none; } .stage { scroll-behavior: auto; } }
+
+/* ---------- tipografía de diapositiva ---------- */
+.eyebrow {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px;
+  margin: 0;
+  font-family: var(--f-mono); font-size: 12px; font-weight: 500;
+  letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted);
+}
+.kind { display: inline-flex; align-items: center; gap: 7px; color: var(--k, var(--muted)); }
+.kind::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.k-def { --k: var(--def); } .k-thm { --k: var(--thm); } .k-ex { --k: var(--ex); } .k-obs { --k: var(--obs); } .k-tp { --k: var(--obs); }
+.src { color: var(--faint); letter-spacing: .05em; }
+
+.slide h1, .slide h2 {
+  font-family: var(--f-display); font-weight: 500;
+  line-height: 1.12; letter-spacing: -.01em;
+  text-wrap: balance; margin: 12px 0 22px;
+}
+.slide h1 { font-size: clamp(34px, 6vw, 54px); }
+.slide h2 { font-size: clamp(27px, 4.2vw, 38px); }
+.slide h3 {
+  font-family: var(--f-display); font-weight: 500; font-size: 1.22em;
+  margin: 30px 0 10px; text-wrap: balance;
+}
+.slide p { margin: 0 0 14px; max-width: 66ch; }
+.slide ul.plain { margin: 0 0 14px; padding-left: 1.2em; max-width: 66ch; }
+.slide ul.plain li { margin: 4px 0; }
+.lead { font-size: 1.08em; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: .9em; }
+
+/* cajas */
+.box { border-radius: 10px; padding: 18px 22px; margin: 18px 0; min-width: 0; }
+.box > :last-child { margin-bottom: 0; }
+.box .label {
+  display: block; margin-bottom: 8px;
+  font-family: var(--f-mono); font-size: 11.5px; font-weight: 500;
+  letter-spacing: .09em; text-transform: uppercase;
+}
+.box.def { background: var(--def-bg); } .box.def .label { color: var(--def); }
+.box.thm { background: var(--thm-bg); } .box.thm .label { color: var(--thm); }
+.box.ex  { background: var(--ex-bg); }  .box.ex .label  { color: var(--ex); }
+.box.obs { background: var(--obs-bg); } .box.obs .label { color: var(--obs); }
+.box.simple { border: 1px dashed var(--line); background: transparent; }
+.box.simple .label { color: var(--muted); }
+.box.task { border: 1px solid var(--line); background: transparent; }
+.box.task .label { color: var(--muted); }
+
+.math { overflow-x: auto; overflow-y: hidden; margin: 10px 0; padding: 4px 0; }
+mjx-container[display="true"] { margin: .6em 0 !important; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+mjx-container { color: inherit; }
+.slide mjx-container.wide { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }
+
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table.t { border-collapse: collapse; width: 100%; min-width: 520px; font-size: .95em; }
+table.t th, table.t td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.t th { font-family: var(--f-mono); font-size: 11.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+table.t td.n { font-family: var(--f-mono); color: var(--faint); width: 2.5em; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.grid2 > * { min-width: 0; }
+
+/* pasos */
+ol.steps { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 16px; counter-reset: s; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 14px; align-items: start; }
+ol.steps > li::before {
+  content: counter(s);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid var(--line); background: var(--sheet);
+  font-family: var(--f-mono); font-size: 12.5px; color: var(--muted);
+  margin-top: 2px;
+}
+ol.steps > li > .body { min-width: 0; }
+ol.steps > li > .body > :last-child { margin-bottom: 0; }
+ol.steps > li.final::before { content: "✓"; color: var(--ex); border-color: var(--ex); }
+ol.steps > li.final.neg::before { content: "✕"; color: var(--bad); border-color: var(--bad); }
+.st { font-weight: 600; display: block; margin-bottom: 4px; }
+ol.steps > li.is-hidden > .body { display: none; }
+ol.steps > li.is-hidden::after {
+  content: "Paso " counter(s) " · toca para verlo";
+  align-self: center;
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: .04em;
+  color: var(--faint);
+  border: 1px dashed var(--line); border-radius: 8px; padding: 6px 12px;
+  justify-self: start; cursor: pointer;
+}
+ol.steps > li.is-hidden.final::after { content: "Respuesta · toca para verla"; }
+ol.steps > li.just { animation: enter .3s ease both; }
+
+.verdict { max-width: 100%; flex-wrap: wrap; display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; font-weight: 600; font-size: .95em; }
+.verdict.yes { background: var(--ex-bg); color: var(--ex); }
+.verdict.no { background: var(--bad-bg); color: var(--bad); }
+
+.fig { margin: 18px auto; display: grid; justify-items: center; gap: 6px; }
+.fig svg { max-width: 100%; height: auto; }
+.fig figcaption { font-size: .88em; color: var(--muted); text-align: center; max-width: 52ch; }
+.fig .ax { stroke: var(--faint); stroke-width: 1; }
+.fig .gr { stroke: var(--line); stroke-width: 1; }
+.fig .v1 { stroke: var(--def); fill: var(--def); }
+.fig .v2 { stroke: var(--thm); fill: var(--thm); }
+.fig .v3 { stroke: var(--ex); fill: var(--ex); }
+.fig .dash { stroke: var(--faint); stroke-dasharray: 4 4; fill: none; }
+.fig text { fill: var(--ink); font-family: var(--f-body); font-size: 13px; }
+.fig text.m { fill: var(--muted); font-size: 12px; }
+
+/* portada */
+.cover-meta { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); letter-spacing: .05em; }
+.entry { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
+.entry button, .entry a {
+  text-align: left; cursor: pointer; text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px; background: transparent;
+  padding: 16px 18px; display: grid; gap: 4px; transition: border-color .15s, background .15s;
+}
+.entry button:hover, .entry a:hover { border-color: var(--accent); background: var(--def-bg); }
+.entry .num { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.entry .ttl { font-family: var(--f-display); font-size: 1.25em; line-height: 1.2; }
+.entry .dsc { font-size: .9em; color: var(--muted); }
+.keys { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 26px; font-size: .9em; color: var(--muted); }
+kbd { font-family: var(--f-mono); font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; background: var(--sheet); color: var(--ink); }
+
+/* ---------- navegación inferior ---------- */
+.nav {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+}
+.nav .grow { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.progress { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+.count { font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-step {
+  height: 36px; padding: 0 14px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink);
+  font-size: 14px; font-weight: 500; white-space: nowrap;
+}
+.btn-step:hover { filter: brightness(1.06); }
+.btn-step[hidden] { display: none !important; }
+
+/* ---------- menú lateral ---------- */
+.scrim { position: fixed; inset: 0; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+.drawer {
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: 30;
+  width: min(380px, 90vw);
+  background: var(--sheet); border-right: 1px solid var(--line);
+  transform: translateX(-102%); transition: transform .25s ease;
+  display: grid; grid-template-rows: auto auto 1fr auto;
+  box-shadow: 30px 0 60px -40px var(--shadow);
+}
+body.menu-open .drawer { transform: none; }
+body.menu-open .scrim { opacity: 1; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .drawer, .scrim { transition: none; } }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 8px; }
+.drawer-head h2 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 22px; }
+.search { padding: 4px 16px 12px; }
+.search input {
+  width: 100%; height: 38px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--ink); font: inherit; font-size: 15px;
+}
+.toc { overflow-y: auto; padding: 0 8px 16px; }
+.toc .grp-title {
+  margin: 14px 8px 4px;
+  font-family: var(--f-mono); font-size: 11.5px; font-weight: 500;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+}
+.toc details { border-radius: 8px; }
+.toc summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 7px 10px; border-radius: 8px; font-weight: 500; font-size: 15px;
+}
+.toc summary::-webkit-details-marker { display: none; }
+.toc summary::before { content: "›"; color: var(--faint); transition: transform .15s; display: inline-block; width: .7em; }
+.toc details[open] > summary::before { transform: rotate(90deg); }
+.toc summary:hover { background: var(--bg); }
+.toc summary .cnt { margin-left: auto; font-family: var(--f-mono); font-size: 11px; color: var(--faint); }
+.toc ul { list-style: none; margin: 0 0 6px; padding: 0 0 0 22px; }
+.toc li button {
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  padding: 5px 10px; border-radius: 6px; font-size: 14px; color: var(--muted);
+  display: flex; gap: 8px; align-items: baseline;
+}
+.toc li button:hover { background: var(--bg); color: var(--ink); }
+.toc li button.cur { background: var(--def-bg); color: var(--ink); font-weight: 500; }
+.toc li button .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--k, var(--faint)); flex: none; transform: translateY(-2px); }
+.drawer-foot { border-top: 1px solid var(--line); padding: 12px 16px; display: grid; gap: 8px; }
+.drawer-foot a { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--ink); padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-weight: 500; }
+.drawer-foot a:hover { border-color: var(--accent); background: var(--def-bg); }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--muted); padding: 2px 2px; }
+.switch input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+@media (max-width: 560px) {
+  .stage { padding: 18px 16px 40px; }
+  .sheet { padding: 22px 14px 26px; border-radius: 10px; }
+  ol.steps > li { grid-template-columns: 24px minmax(0, 1fr); gap: 10px; }
+  ol.steps > li::before { width: 24px; height: 24px; font-size: 11.5px; }
+  mjx-container[display="true"] { font-size: 90%; }
+  .box { padding: 14px 14px; }
+  .entry { grid-template-columns: minmax(0, 1fr); }
+}
+.empty { padding: 10px 12px; color: var(--muted); font-size: 14px; }
+
+ol.plist { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 0; counter-reset: p; }
+ol.plist > li {
+  counter-increment: p;
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+ol.plist > li:last-child { border-bottom: 0; }
+ol.plist > li::before { content: counter(p) "."; font-family: var(--f-mono); font-size: 13px; color: var(--faint); padding-top: 3px; }
+ol.plist > li > div { min-width: 0; }
+ol.plist .math { margin: 0 0 4px; }
+ol.plist .nm { font-weight: 600; }
+ol.plist .w { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button class="icon-btn" id="btn-menu" type="button" aria-label="Abrir el menú" aria-controls="drawer" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span class="hide-sm">Menú</span>
+    </button>
+    <div class="crumb" id="crumb" aria-live="polite"></div>
+    <div class="tools">
+      <button class="icon-btn hide-sm" id="btn-fs-down" type="button" aria-label="Texto más pequeño" title="Texto más pequeño">A−</button>
+      <button class="icon-btn hide-sm" id="btn-fs-up" type="button" aria-label="Texto más grande" title="Texto más grande">A+</button>
+      <button class="icon-btn" id="btn-theme" type="button" aria-label="Cambiar entre tema claro y oscuro" title="Tema claro u oscuro">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <article class="sheet" id="sheet">
+
+<!-- ===================== PORTADA ===================== -->
+<section class="slide" id="inicio" data-group="inicio" data-sec="Portada" data-title="Portada" data-kind="def">
+  <p class="cover-meta">UCB «San Pablo» · MAT 223 Álgebra Lineal · Semestre II-2026</p>
+  <h1>Espacios vectoriales y espacios con producto interno</h1>
+  <p class="lead">Las diapositivas de los Temas 4 y 5, en orden, explicadas con palabras simples. Cada ejemplo está resuelto justo después de su concepto. Al final está la resolución completa del Trabajo Práctico N° 2.</p>
+  <div class="entry">
+    <button type="button" data-go="t4-portada"><span class="num">Tema 4</span><span class="ttl">Espacios vectoriales reales</span><span class="dsc">Subespacios, combinación lineal, independencia, base y dimensión.</span></button>
+    <button type="button" data-go="t5-portada"><span class="num">Tema 5</span><span class="ttl">Espacios con producto interno</span><span class="dsc">Producto interno, norma, distancia, ortogonalidad y Gram–Schmidt.</span></button>
+    <button type="button" data-go="tp-portada"><span class="num">Práctica</span><span class="ttl">TP N° 2 resuelto</span><span class="dsc">Los 15 ejercicios, un inciso por pantalla y paso a paso.</span></button>
+    <a href="mapa-conceptual.html"><span class="num">Esquema</span><span class="ttl">Mapa conceptual</span><span class="dsc">Todo el tema en un mapa que se despliega con un clic.</span></a>
+  </div>
+  <div class="keys">
+    <span><kbd>←</kbd> <kbd>→</kbd> cambiar de diapositiva</span>
+    <span><kbd>Espacio</kbd> ver el siguiente paso</span>
+    <span><kbd>M</kbd> abrir el menú</span>
+  </div>
+</section>
+
+<!-- ===================== TEMA 4 ===================== -->
+<section class="slide" id="t4-portada" data-group="t4" data-sec="Tema 4 · Inicio" data-title="Contenido del tema" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Tema 4</span></p>
+  <h1>Espacios vectoriales reales</h1>
+  <p class="lead">Vamos a ir de lo más general (qué es un espacio vectorial) a lo más útil (cómo encontrar una base y la dimensión).</p>
+  <ol class="plist">
+    <li><div><span class="nm">Espacio vectorial</span> <span class="w">— qué es y sus 8 propiedades</span></div></li>
+    <li><div><span class="nm">Subespacios</span> <span class="w">— espacios dentro de otro espacio</span></div></li>
+    <li><div><span class="nm">Combinación lineal</span> <span class="w">— armar un vector con otros</span></div></li>
+    <li><div><span class="nm">Dependencia e independencia lineal</span> <span class="w">— ¿sobra algún vector?</span></div></li>
+    <li><div><span class="nm">Sistema de generadores</span> <span class="w">— ¿alcanzan para armar todo?</span></div></li>
+    <li><div><span class="nm">Base</span> <span class="w">— generan y no sobra ninguno</span></div></li>
+    <li><div><span class="nm">Dimensión</span> <span class="w">— cuántos vectores tiene una base</span></div></li>
+    <li><div><span class="nm">Base y dimensión de subespacios</span></div></li>
+    <li><div><span class="nm">Subespacio generado</span></div></li>
+  </ol>
+</section>
+
+<!-- 4.1 Espacio vectorial -->
+<section class="slide" id="t4-def" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Definición" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Espacio vectorial real</h2>
+  <div class="box def">
+    <span class="label">Definición</span>
+    <p>Sea $\mathbb{R}$ los números reales y $V$ un conjunto no vacío con operaciones de <b>adición</b> y <b>multiplicación escalar</b> que asignan a cada $u, v \in V$ una suma $u+v\in V$ y a cualquier $u\in V$, $\alpha\in\mathbb{R}$ un producto $\alpha u\in V$.</p>
+    <p>Entonces diremos que $V$ es un <b>espacio vectorial (E.V.)</b> sobre $\mathbb{R}$ si se cumplen las 8 propiedades que veremos a continuación.</p>
+  </div>
+  <div class="box simple">
+    <span class="label">En palabras simples</span>
+    <p>Un espacio vectorial es un conjunto de objetos, que llamamos <b>vectores</b>, que se pueden <b>sumar</b> entre sí y <b>multiplicar por números reales</b>. El resultado de esas operaciones siempre queda dentro del mismo conjunto, y las operaciones cumplen 8 reglas.</p>
+  </div>
+  <div class="box obs">
+    <span class="label">Para tener en cuenta</span>
+    <p>Aquí «vector» no es solo una flecha. También pueden ser vectores las matrices o los polinomios, siempre que cumplan las reglas.</p>
+  </div>
+</section>
+
+<section class="slide" id="t4-prop1" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Propiedades de la suma (1–4)" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Propiedades</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Propiedades 1 a 4: la suma</h2>
+  <ol class="plist">
+    <li><div><div class="math">$(\forall u,v,w\in V)\;\big(u+(v+w)\big)=\big((u+v)+w\big)$</div><span class="nm">Asociativa.</span> <span class="w">No importa cómo agrupes los vectores al sumar.</span></div></li>
+    <li><div><div class="math">$(\exists\, 0\in V)(\forall u\in V)\;(u+0=0+u=u)$</div><span class="nm">Vector cero (neutro).</span> <span class="w">Existe un vector cero que, al sumarlo, no cambia nada.</span></div></li>
+    <li><div><div class="math">$(\forall u\in V)(\exists\,(-u)\in V)\;\big(u+(-u)=(-u)+u=0\big)$</div><span class="nm">Opuesto.</span> <span class="w">Cada vector tiene un opuesto; sumados dan cero.</span></div></li>
+    <li><div><div class="math">$(\forall u,v\in V)\;(u+v=v+u)$</div><span class="nm">Conmutativa.</span> <span class="w">El orden de la suma no altera el resultado.</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-prop2" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Propiedades del producto (5–8)" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Propiedades</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Propiedades 5 a 8: el producto por un escalar</h2>
+  <ol class="plist" start="5" style="counter-reset: p 4">
+    <li><div><div class="math">$(\forall\alpha\in\mathbb{R})(\forall u,v\in V)\;\big(\alpha(u+v)=\alpha u+\alpha v\big)$</div><span class="nm">Distributiva sobre vectores.</span> <span class="w">El número multiplica a cada vector de la suma.</span></div></li>
+    <li><div><div class="math">$(\forall\alpha_1,\alpha_2\in\mathbb{R})(\forall u\in V)\;\big((\alpha_1+\alpha_2)u=\alpha_1u+\alpha_2u\big)$</div><span class="nm">Distributiva sobre escalares.</span> <span class="w">Una suma de números multiplica al vector «repartiéndose».</span></div></li>
+    <li><div><div class="math">$(\forall\alpha_1,\alpha_2\in\mathbb{R})(\forall u\in V)\;\big((\alpha_1\alpha_2)u=\alpha_1(\alpha_2u)\big)$</div><span class="nm">Asociativa del producto.</span> <span class="w">Multiplicar por dos números seguidos es igual que multiplicar por su producto.</span></div></li>
+    <li><div><div class="math">$(1\in\mathbb{R})(\forall u\in V)\;(1u=u)$</div><span class="nm">El 1 no cambia nada.</span> <span class="w">Multiplicar un vector por 1 lo deja igual.</span></div></li>
+  </ol>
+  <p class="muted small">Basta con que <b>una sola</b> propiedad falle para que el conjunto <b>no</b> sea espacio vectorial.</p>
+</section>
+
+<section class="slide" id="t4-ej-rn" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Ejemplo 1: ℝⁿ" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 1</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>El conjunto $\mathbb{R}^n$</h2>
+  <div class="box ex">
+    <span class="label">Enunciado</span>
+    <p>El conjunto $\mathbb{R}^n=\{(a_1,a_2,\dots,a_n)\,/\,a_i\in\mathbb{R}\}$ con las operaciones</p>
+    <div class="math">$$\begin{cases}(a_1,\dots,a_n)+(b_1,\dots,b_n)=(a_1+b_1,\dots,a_n+b_n)\\[2pt] \alpha\,(a_1,\dots,a_n)=(\alpha a_1,\dots,\alpha a_n)\end{cases}$$</div>
+    <p><b>constituye un espacio vectorial.</b></p>
+  </div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Cómo se suma y se multiplica</span><p>Se opera <b>componente a componente</b>. Por ejemplo, en $\mathbb{R}^2$:</p>
+      <div class="math">$$(1,2)+(3,-1)=(4,1),\qquad 2\,(1,2)=(2,4)$$</div><p>Los resultados siguen siendo pares de números: siguen en $\mathbb{R}^2$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Por qué se cumplen las 8 propiedades</span><p>Cada propiedad se reduce a la misma propiedad de los números reales en cada componente. Por ejemplo, la conmutativa: $(a_1+b_1,\dots)=(b_1+a_1,\dots)$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">El cero y el opuesto</span><p>El vector cero es $(0,0,\dots,0)$ y el opuesto de $(a_1,\dots,a_n)$ es $(-a_1,\dots,-a_n)$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$\mathbb{R}^n$ es espacio vectorial</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-ej-mat" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Ejemplo 2: matrices" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 2</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Las matrices $M_{m\times n}(\mathbb{R})$</h2>
+  <div class="box ex">
+    <span class="label">Enunciado</span>
+    <p>El conjunto de matrices $M_{m\times n}(\mathbb{R})$ con operaciones de adición matricial y multiplicación escalar <b>constituye un espacio vectorial.</b></p>
+  </div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Las operaciones, con un ejemplo de $2\times 2$</span>
+      <div class="math">$$\begin{pmatrix}1&2\\0&3\end{pmatrix}+\begin{pmatrix}4&-1\\2&1\end{pmatrix}=\begin{pmatrix}5&1\\2&4\end{pmatrix},\qquad 3\begin{pmatrix}1&2\\0&3\end{pmatrix}=\begin{pmatrix}3&6\\0&9\end{pmatrix}$$</div>
+      <p>Se suma entrada por entrada y el escalar multiplica a cada entrada. El resultado sigue siendo una matriz del mismo tamaño.</p></div></li>
+    <li class="step"><div class="body"><span class="st">El cero y el opuesto</span><p>El «vector» cero es la <b>matriz nula</b> (todas sus entradas son 0) y el opuesto de $A$ es $-A$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$M_{m\times n}(\mathbb{R})$ es espacio vectorial</span><p class="muted small">Aquí cada matriz es un «vector».</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-ej-pol" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Ejemplo 3: polinomios" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 3</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Los polinomios de grado $n$</h2>
+  <div class="box ex">
+    <span class="label">Enunciado</span>
+    <p>$$P_n(\mathbb{R})=\{a_0+a_1x+\dots+a_nx^n\,/\,a_i\in\mathbb{R}\}$$ con las operaciones:</p>
+    <div class="math">$$\begin{aligned}&(a_0+\dots+a_nx^n)+(b_0+\dots+b_nx^n)\\&\qquad=(a_0+b_0)+(a_1+b_1)x+\dots+(a_n+b_n)x^n\end{aligned}$$</div>
+    <div class="math">$$\alpha\,(a_0+a_1x+\dots+a_nx^n)=\alpha a_0+\alpha a_1x+\dots+\alpha a_nx^n$$</div>
+    <p><b>Constituye un espacio vectorial.</b></p>
+  </div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Se suman los coeficientes del mismo grado</span>
+      <div class="math">$$\begin{gathered}(2+3x+x^2)+(1-x)=3+2x+x^2\\ 3\,(1-x+x^2)=3-3x+3x^2\end{gathered}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">El cero y el opuesto</span><p>El cero es el polinomio $0$ (todos los coeficientes valen 0). El opuesto se obtiene cambiando el signo de cada coeficiente.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$P_n(\mathbb{R})$ es espacio vectorial</span><p class="muted small">«De grado $n$» se entiende como «de grado a lo sumo $n$»: así la suma nunca se sale del conjunto.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-ej-no" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Ejemplo 4: uno que no lo es" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 4</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Un caso que <em>no</em> es espacio vectorial</h2>
+  <div class="box ex">
+    <span class="label">Enunciado</span>
+    <p>El conjunto $\mathbb{R}^2=\{(a_1,a_2)\,/\,a_i\in\mathbb{R}\}$ con las operaciones:</p>
+    <div class="math">$$\begin{cases}(a_1,a_2)+(b_1,b_2)=(a_1+b_1,\;a_2+b_2)\\[2pt] \alpha\,(a_1,a_2)=(2\alpha a_1,\;2\alpha a_2)\end{cases}$$</div>
+  </div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Qué tiene de raro?</span><p>La suma es la de siempre, pero el producto por escalar <b>además duplica</b>. Revisamos la propiedad 7: $(\alpha_1\alpha_2)u=\alpha_1(\alpha_2u)$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Lado izquierdo</span><div class="math">$$(\alpha_1\alpha_2)(a_1,a_2)=(2\alpha_1\alpha_2a_1,\;2\alpha_1\alpha_2a_2)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Lado derecho</span><p>Primero $\alpha_2u=(2\alpha_2a_1,\,2\alpha_2a_2)$ y luego multiplicamos por $\alpha_1$ (que vuelve a duplicar):</p><div class="math">$$\alpha_1(\alpha_2u)=(2\alpha_1\cdot 2\alpha_2a_1,\;2\alpha_1\cdot2\alpha_2a_2)=(4\alpha_1\alpha_2a_1,\;4\alpha_1\alpha_2a_2)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comparamos con números</span><p>Con $\alpha_1=\alpha_2=1$ y $u=(1,1)$: el lado izquierdo da $(2,2)$ y el derecho da $(4,4)$. No son iguales.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No constituye un espacio vectorial</span><p>No verifica la propiedad 7. <span class="muted">(Tampoco la 8: $$1\cdot(a_1,a_2)=(2a_1,2a_2)\neq(a_1,a_2)$$)</span></p></div></li>
+  </ol>
+</section>
+
+<!-- 4.2 Subespacios -->
+<section class="slide" id="t4-sub-def" data-group="t4" data-sec="4.2 Subespacios" data-title="Definición y método" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>Subespacios vectoriales</h2>
+  <div class="box def">
+    <span class="label">Condición suficiente para la existencia de subespacios</span>
+    <p>Sea $W$ un subconjunto no vacío de un espacio vectorial $V$; entonces $W$ es un <b>subespacio</b> de $V$ si cumple las siguientes dos condiciones:</p>
+    <p><b>i)</b> $W$ es cerrado bajo la adición vectorial: $\;u,v\in W\;\Longrightarrow\;u+v\in W$</p>
+    <p><b>ii)</b> $W$ es cerrado bajo la multiplicación escalar: $\;\forall\alpha\in\mathbb{R},\ \forall u\in W\;\Longrightarrow\;\alpha u\in W$</p>
+  </div>
+  <div class="box simple">
+    <span class="label">En palabras simples</span>
+    <p>Un subespacio es una parte de $V$ que también es un espacio vectorial. No hace falta revisar las 8 propiedades: basta ver que <b>sumar</b> y <b>multiplicar por números</b> no te sacan de $W$.</p>
+  </div>
+  <div class="box obs">
+    <span class="label">Método en 3 pasos</span>
+    <p><b>1.</b> ¿Está el vector cero en $W$? Si no está, $W$ no es subespacio y terminamos. <b>2.</b> Tomamos $u,v\in W$ y vemos si $u+v\in W$. <b>3.</b> Vemos si $\alpha u\in W$.</p>
+  </div>
+</section>
+
+<section class="slide" id="t4-sub-ej1" data-group="t4" data-sec="4.2 Subespacios" data-title="Ejemplo 1: c = 0" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 1</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>¿Es $W$ subespacio de $\mathbb{R}^3$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span>
+    <div class="math">$$W=\{(a,b,0)\,/\,a,b\in\mathbb{R}\}=\{(a,b,c)\in\mathbb{R}^3\,/\,c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Está el cero?</span><p>$(0,0,0)$ tiene tercera componente $0$, así que $(0,0,0)\in W$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Suma</span><p>Sean $u=(a_1,b_1,0)$ y $v=(a_2,b_2,0)$. Entonces</p><div class="math">$$u+v=(a_1+a_2,\;b_1+b_2,\;0)\in W$$</div><p>porque la tercera componente sigue siendo $0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Producto por escalar</span><div class="math">$$\alpha\,(a,b,0)=(\alpha a,\;\alpha b,\;0)\in W$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es subespacio vectorial</span><p class="muted small">Geométricamente es el plano $xy$ dentro del espacio.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-sub-ej2" data-group="t4" data-sec="4.2 Subespacios" data-title="Ejemplo 2: b = 1" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 2</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>¿Es $W_1$ subespacio de $\mathbb{R}^3$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span>
+    <div class="math">$$W_1=\{(a,1,c)\,/\,a,c\in\mathbb{R}\}=\{(a,b,c)\in\mathbb{R}^3\,/\,b=1\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Está el cero?</span><p>En $(0,0,0)$ la segunda componente es $0$, no $1$. Entonces $(0,0,0)\notin W_1$.</p><p>Con esto ya sabemos que no es subespacio.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Lo confirmamos con la suma</span><div class="math">$$(a_1,1,c_1)+(a_2,1,c_2)=(a_1+a_2,\;\mathbf{2},\;c_1+c_2)$$</div><p>La segunda componente da $2\neq1$: la suma se sale de $W_1$.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es subespacio vectorial</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-sub-ej3" data-group="t4" data-sec="4.2 Subespacios" data-title="Ejemplo 3: a + 2b − c = 0" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 3</span><span class="src">Diapositiva 4.1</span></p>
+  <h2>¿Es $W_2$ subespacio de $\mathbb{R}^3$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span>
+    <div class="math">$$W_2=\{(a,b,c)\in\mathbb{R}^3\,/\,a+2b-c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Está el cero?</span><p>$0+2(0)-0=0$. Sí, $(0,0,0)\in W_2$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Suma</span><p>Sean $u=(a_1,b_1,c_1)$ y $v=(a_2,b_2,c_2)$ en $W_2$, es decir, $a_1+2b_1-c_1=0$ y $a_2+2b_2-c_2=0$. Para $u+v$:</p>
+      <div class="math">$$\begin{aligned}&(a_1+a_2)+2(b_1+b_2)-(c_1+c_2)\\&\qquad=\underbrace{(a_1+2b_1-c_1)}_{0}+\underbrace{(a_2+2b_2-c_2)}_{0}=0\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Producto por escalar</span><div class="math">$$\alpha a+2(\alpha b)-\alpha c=\alpha\,(a+2b-c)=\alpha\cdot0=0$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es subespacio vectorial</span></div></li>
+  </ol>
+  <div class="box obs"><span class="label">Regla práctica</span><p>Si $W$ se define con ecuaciones lineales <b>igualadas a cero</b>, es subespacio. Si aparece un número suelto (como «$=1$» o «$+1$») o una desigualdad (como «$>0$»), no lo es.</p></div>
+</section>
+
+<!-- 4.3 Combinación lineal -->
+<section class="slide" id="t4-cl-def" data-group="t4" data-sec="4.3 Combinación lineal" data-title="Definición y método" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 4.2</span></p>
+  <h2>Combinación lineal</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $V$ un E.V. sobre $\mathbb{R}$ y sea $A=\{v_1,v_2,\dots,v_n\}$ una familia de vectores en $V$. Un vector $v\in V$ es <b>combinación lineal (C.L.)</b> de la familia $A\subseteq V$ si existen $n$ escalares $\alpha_1,\alpha_2,\dots,\alpha_n$ tales que:</p>
+    <div class="math">$$v=\sum_{i=1}^{n}\alpha_i v_i=\alpha_1v_1+\alpha_2v_2+\dots+\alpha_nv_n$$</div>
+  </div>
+  <div class="box simple"><span class="label">En palabras simples</span>
+    <p>$v$ es combinación lineal de $A$ si puedes <b>armar</b> $v$ con los vectores de $A$: multiplicando cada uno por un número y sumando.</p></div>
+  <div class="box obs"><span class="label">Método</span>
+    <p><b>1.</b> Escribimos $v=\alpha_1v_1+\dots+\alpha_nv_n$. <b>2.</b> Igualamos componente por componente (o coeficiente por coeficiente) y obtenemos un sistema de ecuaciones. <b>3.</b> Si el sistema tiene solución, $v$ <b>sí</b> es C.L.; si es incompatible, <b>no</b> lo es.</p></div>
+</section>
+
+<section class="slide" id="t4-cl-ej1" data-group="t4" data-sec="4.3 Combinación lineal" data-title="Ejemplo: v = (1,1) en ℝ²" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo</span><span class="src">Diapositiva 4.2</span></p>
+  <h2>¿Es $v=(1,1)$ combinación lineal de $A$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><p>Determinar si $v=(1,1)$ es combinación lineal de la familia de vectores $A=\{(-1,2),\,(3,-3)\}$ del E.V. $\mathbb{R}^2$.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos la combinación</span><div class="math">$$(1,1)=\alpha(-1,2)+\beta(3,-3)=(-\alpha+3\beta,\;2\alpha-3\beta)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Igualamos componentes</span><div class="math">$$\begin{cases}-\alpha+3\beta=1\\ \;\;\,2\alpha-3\beta=1\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Resolvemos</span><p>Sumando las dos ecuaciones, $\beta$ se cancela: $\alpha=2$. Reemplazando en la primera: $-2+3\beta=1\Rightarrow\beta=1$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Verificamos</span><div class="math">$$2(-1,2)+1(3,-3)=(-2+3,\;4-3)=(1,1)\ \checkmark$$</div>
+      <figure class="fig">
+        <svg viewBox="0 0 280 260" width="280" role="img" aria-label="La flecha 2(−1,2) seguida de (3,−3) llega al punto (1,1)">
+          <g class="gr"><line x1="20" y1="40" x2="260" y2="40"/><line x1="20" y1="70" x2="260" y2="70"/><line x1="20" y1="100" x2="260" y2="100"/><line x1="20" y1="130" x2="260" y2="130"/><line x1="20" y1="190" x2="260" y2="190"/><line x1="20" y1="220" x2="260" y2="220"/><line x1="50" y1="20" x2="50" y2="240"/><line x1="80" y1="20" x2="80" y2="240"/><line x1="140" y1="20" x2="140" y2="240"/><line x1="170" y1="20" x2="170" y2="240"/><line x1="200" y1="20" x2="200" y2="240"/><line x1="230" y1="20" x2="230" y2="240"/></g>
+          <line class="ax" x1="20" y1="160" x2="260" y2="160"/><line class="ax" x1="110" y1="20" x2="110" y2="240"/>
+          <defs>
+            <marker id="mk1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v1"/></marker>
+            <marker id="mk2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v2"/></marker>
+            <marker id="mk3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v3"/></marker>
+          </defs>
+          <line class="v1" x1="110" y1="160" x2="50" y2="40" stroke-width="2.2" marker-end="url(#mk1)"/>
+          <line class="v2" x1="50" y1="40" x2="140" y2="130" stroke-width="2.2" marker-end="url(#mk2)"/>
+          <line class="v3" x1="110" y1="160" x2="140" y2="130" stroke-width="2.6" marker-end="url(#mk3)"/>
+          <text x="30" y="110">2(−1,2)</text>
+          <text x="104" y="76">(3,−3)</text>
+          <text x="146" y="146">v = (1,1)</text>
+          <text class="m" x="114" y="176">0</text>
+        </svg>
+        <figcaption>Primero avanzamos dos veces $(-1,2)$ y luego una vez $(3,-3)$: llegamos exactamente a $(1,1)$.</figcaption>
+      </figure></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es C.L.</span><div class="math">$$v=2(-1,2)+1(3,-3)$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-cl-ej2" data-group="t4" data-sec="4.3 Combinación lineal" data-title="Ejemplo: P(t) = t² − 2t + 1" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo</span><span class="src">Diapositiva 4.2</span></p>
+  <h2>¿Es $P(t)$ combinación lineal de $C$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><p>Determinar si $P(t)=t^2-2t+1$ es combinación lineal de la familia $$C=\{t^2-2t+2,\;3t-2\}\subset P_2(\mathbb{R})$$</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos y ordenamos por potencias de $t$</span><div class="math">$$\begin{aligned}t^2-2t+1&=\alpha(t^2-2t+2)+\beta(3t-2)\\&=\alpha t^2+(-2\alpha+3\beta)t+(2\alpha-2\beta)\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Igualamos coeficientes</span><div class="math">$$\begin{cases}t^2: & \alpha=1\\ t: & -2\alpha+3\beta=-2\\ 1: & 2\alpha-2\beta=1\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Resolvemos con las dos primeras</span><p>$\alpha=1$, entonces $-2+3\beta=-2\Rightarrow\beta=0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Revisamos la tercera</span><p>$2(1)-2(0)=2$, pero debería dar $1$. Es una contradicción: el sistema no tiene solución.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es combinación lineal</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-1a" data-group="t4" data-sec="4.3 Combinación lineal" data-title="Bloque 8 · 1a (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 1a</span></p>
+  <h2>¿Es $v$ combinación lineal de $A$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$v=(1,4,-3),\qquad A=\{(1,9,0),\;(3,2,1)\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos</span><div class="math">$$(1,4,-3)=\alpha(1,9,0)+\beta(3,2,1)=(\alpha+3\beta,\;9\alpha+2\beta,\;\beta)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Sistema</span><div class="math">$$\begin{cases}\alpha+3\beta=1\\ 9\alpha+2\beta=4\\ \beta=-3\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Resolvemos</span><p>De la tercera: $\beta=-3$. En la primera: $\alpha=1-3(-3)=10$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos en la segunda</span><p>$9(10)+2(-3)=84\neq4$. Contradicción.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">$v$ no es C.L. de $A$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-1b" data-group="t4" data-sec="4.3 Combinación lineal" data-title="Bloque 8 · 1b (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 1b</span></p>
+  <h2>¿Es $P(t)$ combinación lineal de $B$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$\begin{gathered}P(t)=-t^2+4t-1\\ B=\{t^2-3,\;-4t^2+2t,\;t^2+3t+5\}\subset P_2(\mathbb{R})\end{gathered}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos y agrupamos</span><div class="math">$$\begin{aligned}&\alpha(t^2-3)+\beta(-4t^2+2t)+\gamma(t^2+3t+5)\\&\qquad=(\alpha-4\beta+\gamma)t^2+(2\beta+3\gamma)t+(-3\alpha+5\gamma)\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Igualamos con $-t^2+4t-1$</span><div class="math">$$\begin{cases}\alpha-4\beta+\gamma=-1\\ 2\beta+3\gamma=4\\ -3\alpha+5\gamma=-1\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos $\alpha$ y $\beta$ en función de $\gamma$</span><div class="math">$$\alpha=\frac{5\gamma+1}{3},\qquad \beta=\frac{4-3\gamma}{2}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos en la primera ecuación</span><div class="math">$$\frac{5\gamma+1}{3}-2(4-3\gamma)+\gamma=-1$$</div><p>Multiplicamos todo por 3: $$5\gamma+1-24+18\gamma+3\gamma=-3\;\Rightarrow\;26\gamma=20\;\Rightarrow\;\gamma=\tfrac{10}{13}$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Encontramos los demás</span><div class="math">$$\beta=\frac{4-\frac{30}{13}}{2}=\frac{11}{13},\qquad \alpha=\frac{\frac{50}{13}+1}{3}=\frac{21}{13}$$</div><p class="muted small">Comprobación del coeficiente de $t^2$: $\frac{21}{13}-\frac{44}{13}+\frac{10}{13}=-1$ ✓</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es C.L.</span><div class="math">$$P(t)=\tfrac{21}{13}(t^2-3)+\tfrac{11}{13}(-4t^2+2t)+\tfrac{10}{13}(t^2+3t+5)$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-1c" data-group="t4" data-sec="4.3 Combinación lineal" data-title="Bloque 8 · 1c (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 1c</span></p>
+  <h2>¿Es $A$ combinación lineal de $C$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$\begin{gathered}A=\begin{pmatrix}1&3\\2&-1\end{pmatrix}\\[4pt] C=\left\{\begin{pmatrix}2&3\\4&-3\end{pmatrix},\begin{pmatrix}4&-1\\-3&0\end{pmatrix},\begin{pmatrix}-2&4\\7&-3\end{pmatrix}\right\}\subset M_2(\mathbb{R})\end{gathered}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Sumamos entrada por entrada</span><div class="math">$$\alpha C_1+\beta C_2+\gamma C_3=\begin{pmatrix}2\alpha+4\beta-2\gamma & 3\alpha-\beta+4\gamma\\ 4\alpha-3\beta+7\gamma & -3\alpha-3\gamma\end{pmatrix}=\begin{pmatrix}1&3\\2&-1\end{pmatrix}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">La entrada de abajo a la derecha</span><p>$$-3\alpha-3\gamma=-1\;\Rightarrow\;\alpha+\gamma=\tfrac13\;\Rightarrow\;\alpha=\tfrac13-\gamma$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">La entrada de arriba a la izquierda</span><p>$$2\left(\tfrac13-\gamma\right)+4\beta-2\gamma=1\;\Rightarrow\;4\beta-4\gamma=\tfrac13\;\Rightarrow\;\beta=\gamma+\tfrac1{12}$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">La entrada de arriba a la derecha</span><div class="math">$$3\left(\tfrac13-\gamma\right)-\left(\gamma+\tfrac1{12}\right)+4\gamma=3\;\Rightarrow\;1-\tfrac1{12}=3\;\Rightarrow\;\tfrac{11}{12}=3$$</div><p>Las $\gamma$ se cancelan y queda una igualdad falsa.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">$A$ no es C.L. de $C$</span></div></li>
+  </ol>
+</section>
+
+<!-- 4.4 Dependencia e independencia lineal -->
+<section class="slide" id="t4-li-def" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Definiciones" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 4.2</span></p>
+  <h2>Dependencia e independencia lineal</h2>
+  <div class="box def"><span class="label">Definición 1 · L.I.</span>
+    <p>Sea $A=\{v_1,v_2,\dots,v_n\}$ una familia de vectores distintos de un E.V. Se dice que $A$ es <b>linealmente independiente (L.I.)</b> si los $n$ escalares $\alpha_1,\alpha_2,\dots,\alpha_n$ que cumplen</p>
+    <div class="math">$$\alpha_1v_1+\alpha_2v_2+\dots+\alpha_nv_n=0_V$$</div>
+    <p>son <b>todos iguales a cero</b> (es la única posibilidad).</p>
+  </div>
+  <div class="box def"><span class="label">Definición 2 · L.D.</span>
+    <p>La familia $A$ es <b>linealmente dependiente (L.D.)</b> si existen escalares $\alpha_1,\alpha_2,\dots,\alpha_n$ <b>no todos iguales a cero</b> tales que $\alpha_1v_1+\alpha_2v_2+\dots+\alpha_nv_n=0_V$.</p>
+  </div>
+  <div class="box simple"><span class="label">En palabras simples</span>
+    <p><b>L.I.:</b> ningún vector sobra; no se puede armar uno de ellos con los demás.<br><b>L.D.:</b> al menos uno sobra, porque se puede escribir como combinación lineal de los otros.</p></div>
+</section>
+
+<section class="slide" id="t4-li-met" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Cómo se decide" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-obs">Método</span></p>
+  <h2>¿Cómo saber si una familia es L.I. o L.D.?</h2>
+  <ol class="plist">
+    <li><div><span class="nm">Igualar a cero.</span> <span class="w">Escribimos $\alpha_1v_1+\dots+\alpha_nv_n=0$ e igualamos componentes. Sale un sistema <b>homogéneo</b> (todo igualado a 0).</span></div></li>
+    <li><div><span class="nm">Resolver.</span> <span class="w">Si la única solución es $\alpha_1=\dots=\alpha_n=0$, la familia es <b>L.I.</b> Si hay otra solución, es <b>L.D.</b></span></div></li>
+    <li><div><span class="nm">Atajo con determinante.</span> <span class="w">Si al poner los vectores como columnas queda una matriz cuadrada: $\det\neq0\Rightarrow$ L.I. y $\det=0\Rightarrow$ L.D.</span></div></li>
+    <li><div><span class="nm">Atajo por cantidad.</span> <span class="w">Si hay más vectores que la dimensión del espacio (por ejemplo, 3 vectores en $\mathbb{R}^2$), la familia es L.D. seguro.</span></div></li>
+  </ol>
+  <div class="box obs"><span class="label">Polinomios y matrices</span><p>Se trabaja igual: cada polinomio se representa por sus coeficientes y cada matriz por sus entradas.</p></div>
+</section>
+
+<section class="slide" id="t4-b8-2a" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Bloque 8 · 2a (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 2a</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$A=\{(1,2,-3),\;(3,2,1),\;(-1,2,-7)\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos a cero</span><div class="math">$$\begin{gathered}\alpha(1,2,-3)+\beta(3,2,1)+\gamma(-1,2,-7)=(0,0,0)\\[4pt]\begin{cases}\alpha+3\beta-\gamma=0\\2\alpha+2\beta+2\gamma=0\\-3\alpha+\beta-7\gamma=0\end{cases}\end{gathered}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante (vectores como columnas)</span><div class="math">$$\begin{aligned}\begin{vmatrix}1&3&-1\\2&2&2\\-3&1&-7\end{vmatrix}&=1(-14-2)-3(-14+6)+(-1)(2+6)\\&=-16+24-8=0\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Como $\det=0$, hay soluciones no nulas</span><p>Por ejemplo $\alpha=-2,\ \beta=1,\ \gamma=1$:</p><div class="math">$$-2(1,2,-3)+(3,2,1)+(-1,2,-7)=(0,0,0)$$</div></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">L.D.</span><p>El tercer vector sobra: $$(-1,2,-7)=2(1,2,-3)-(3,2,1)$$</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-2b" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Bloque 8 · 2b (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 2b</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$B=\{t^2-3,\;-4t^2+2t,\;t^2+3t+5\}\subset P_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos al polinomio cero</span><div class="math">$$(\alpha-4\beta+\gamma)t^2+(2\beta+3\gamma)t+(-3\alpha+5\gamma)=0\;\Rightarrow\;\begin{cases}\alpha-4\beta+\gamma=0\\2\beta+3\gamma=0\\-3\alpha+5\gamma=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante de los coeficientes</span><div class="math">$$\begin{vmatrix}1&-4&1\\0&2&3\\-3&0&5\end{vmatrix}=1(10-0)+4(0+9)+1(0+6)=10+36+6=52$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Conclusión del sistema</span><p>Como $\det\neq0$, la única solución es $\alpha=\beta=\gamma=0$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">L.I.</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-2c" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Bloque 8 · 2c (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 2c</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$C=\left\{\begin{pmatrix}2&3\\4&-3\end{pmatrix},\begin{pmatrix}4&-1\\-3&0\end{pmatrix},\begin{pmatrix}-2&4\\7&-3\end{pmatrix},\begin{pmatrix}6&-5\\-10&3\end{pmatrix}\right\}\subset M_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos a la matriz nula</span><div class="math">$$\begin{cases}2\alpha+4\beta-2\gamma+6\delta=0\\3\alpha-\beta+4\gamma-5\delta=0\\4\alpha-3\beta+7\gamma-10\delta=0\\-3\alpha-3\gamma+3\delta=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">De la última ecuación</span><p>$$-3\alpha-3\gamma+3\delta=0\;\Rightarrow\;\delta=\alpha+\gamma$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">En la primera</span><p>$$2\alpha+4\beta-2\gamma+6(\alpha+\gamma)=0\;\Rightarrow\;8\alpha+4\beta+4\gamma=0\;\Rightarrow\;\beta=-2\alpha-\gamma$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Las otras dos ecuaciones</span><p>Al reemplazar $\beta$ y $\delta$, la segunda y la tercera quedan $0=0$. Entonces $\alpha$ y $\gamma$ son <b>libres</b>: hay infinitas soluciones.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Una solución no nula</span><p>Con $\alpha=-1,\ \gamma=1$: $\beta=1,\ \delta=0$. Es decir, $-C_1+C_2+C_3=0$.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">L.D.</span><p class="muted small">Ojo: 4 matrices en $M_2$ (dimensión 4) podrían ser L.I.; por eso hubo que calcular.</p></div></li>
+  </ol>
+</section>
+
+<!-- 4.5 Sistema de generadores -->
+<section class="slide" id="t4-sg-def" data-group="t4" data-sec="4.5 Sistema de generadores" data-title="Definición y método" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 4.2</span></p>
+  <h2>Sistema de generadores</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $A=\{v_1,v_2,\dots,v_n\}$ una familia de vectores de un E.V. Se dice que $A\subseteq V$ es un <b>sistema de generadores</b> de $V$ (S.G.), o que la familia $A$ <b>genera</b> $V$, si y solo si todo vector $v\in V$ puede expresarse como combinación lineal de los vectores de $A$.</p>
+    <div class="math">$$A\text{ es un S.G. de }V\iff\forall v\in V,\;v=\sum_{i=1}^{n}\alpha_iv_i$$</div>
+  </div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>$A$ genera $V$ si con los vectores de $A$ puedes armar <b>cualquier</b> vector de $V$.</p></div>
+  <div class="box obs"><span class="label">Método</span><p><b>1.</b> Tomamos un vector genérico, por ejemplo $(x,y,z)$. <b>2.</b> Planteamos la C.L. y el sistema. <b>3.</b> Si el sistema tiene solución para <b>todos</b> los $x,y,z$, $A$ genera. Si aparece una condición (como $y=-2x$), no genera.</p></div>
+</section>
+
+<section class="slide" id="t4-b8-3a" data-group="t4" data-sec="4.5 Sistema de generadores" data-title="Bloque 8 · 3a (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 3a</span></p>
+  <h2>¿Genera $\mathbb{R}^3$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$A=\{(1,-2,-3),\;(-1,2,1)\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Vector genérico</span><div class="math">$$(x,y,z)=\alpha(1,-2,-3)+\beta(-1,2,1)\;\Rightarrow\;\begin{cases}\alpha-\beta=x\\-2\alpha+2\beta=y\\-3\alpha+\beta=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comparamos las dos primeras</span><p>La segunda es $-2(\alpha-\beta)=y$, o sea $-2x=y$. Esto es una <b>condición</b>: solo se pueden armar los vectores con $y=-2x$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Un vector que no se puede armar</span><p>$(0,1,0)$: ahí $y=1$ pero $-2x=0$. No cumple la condición.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No genera $\mathbb{R}^3$</span><p class="muted small">Además, 2 vectores nunca alcanzan para generar $\mathbb{R}^3$, que necesita 3.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-3b" data-group="t4" data-sec="4.5 Sistema de generadores" data-title="Bloque 8 · 3b (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 3b</span></p>
+  <h2>¿Genera $P_2(\mathbb{R})$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$B=\{t^2-3,\;-t^2+2t,\;3t+1\}\subset P_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Polinomio genérico $xt^2+yt+z$</span><div class="math">$$\begin{gathered}\alpha(t^2-3)+\beta(-t^2+2t)+\gamma(3t+1)=xt^2+yt+z\\[4pt]\begin{cases}\alpha-\beta=x\\2\beta+3\gamma=y\\-3\alpha+\gamma=z\end{cases}\end{gathered}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante de los coeficientes</span><div class="math">$$\begin{vmatrix}1&-1&0\\0&2&3\\-3&0&1\end{vmatrix}=1(2-0)+1(0+9)+0=11$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Interpretación</span><p>Como $\det\neq0$, el sistema tiene solución para cualquier $x,y,z$: todo polinomio de grado $\le2$ se puede armar.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí genera $P_2(\mathbb{R})$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b8-3c" data-group="t4" data-sec="4.5 Sistema de generadores" data-title="Bloque 8 · 3c (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 8 · 3c</span></p>
+  <h2>¿Genera $M_2(\mathbb{R})$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$C=\left\{\begin{pmatrix}2&1\\0&-3\end{pmatrix},\begin{pmatrix}2&-1\\-3&1\end{pmatrix}\right\}\subset M_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Matriz genérica</span><div class="math">$$\alpha C_1+\beta C_2=\begin{pmatrix}x&y\\z&w\end{pmatrix}\;\Rightarrow\;\begin{cases}2\alpha+2\beta=x\\\alpha-\beta=y\\-3\beta=z\\-3\alpha+\beta=w\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos con dos ecuaciones</span><p>$\beta=-\tfrac z3$ y $\alpha=y-\tfrac z3$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Las otras dos imponen condiciones</span><div class="math">$$3x-6y+4z=0\qquad\text{y}\qquad 9y-2z+3w=0$$</div><p>Por ejemplo, $\begin{pmatrix}1&0\\0&0\end{pmatrix}$ no cumple la primera ($3\neq0$).</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No genera $M_2(\mathbb{R})$</span><p class="muted small">Con 2 matrices no alcanza: $M_2$ tiene dimensión 4.</p></div></li>
+  </ol>
+</section>
+
+<!-- 4.6 Base -->
+<section class="slide" id="t4-base-def" data-group="t4" data-sec="4.6 Base" data-title="Definición" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Base de un espacio vectorial</h2>
+  <div class="box def"><span class="label">Definición (base)</span>
+    <p>Sea $A=\{v_1,v_2,\dots,v_n\}$ una familia de vectores de un E.V. Entonces la familia $A$ es una <b>base</b> de $V$ si y solo si $A$ es <b>L.I.</b> y es un <b>sistema de generadores</b> del E.V. $V$.</p></div>
+  <div class="math">$$\text{Base}\;=\;\text{L.I.}\;+\;\text{S.G.}$$</div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Una base es un grupo de vectores «justo»: alcanza para armar todo (genera) y no le sobra ninguno (es L.I.).</p></div>
+  <div class="box obs"><span class="label">Atajo</span><p>Si $\dim V=n$ y tienes <b>exactamente $n$</b> vectores, basta con comprobar una de las dos condiciones. En la práctica: armamos la matriz cuadrada y vemos que $\det\neq0$.</p></div>
+</section>
+
+<section class="slide" id="t4-b9-1a" data-group="t4" data-sec="4.6 Base" data-title="Bloque 9 · 1a" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 1a</span></p>
+  <h2>¿Es $A$ una base?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$A=\{(2,-3),\;(3,1),\;(-1,2)\}$$</div><p class="muted small">En la diapositiva dice $\mathbb{R}^3$, pero los vectores tienen 2 componentes: son de $\mathbb{R}^2$.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Contamos</span><p>Son 3 vectores en $\mathbb{R}^2$, cuya dimensión es 2. Hay más vectores que la dimensión, así que son L.D.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Lo mostramos</span><p>De $$\alpha(2,-3)+\beta(3,1)+\gamma(-1,2)=(0,0)$$ sale $\gamma=2\alpha+3\beta$ y $\alpha=-7\beta$. Con $\beta=-1$:</p><div class="math">$$7(2,-3)-(3,1)+11(-1,2)=(0,0)$$</div></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es base</span><p>Es L.D. (y tampoco podría ser base de $\mathbb{R}^3$, porque sus vectores no son de $\mathbb{R}^3$).</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-1b" data-group="t4" data-sec="4.6 Base" data-title="Bloque 9 · 1b" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 1b</span></p>
+  <h2>¿Es $A$ una base de $\mathbb{R}^3$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$A=\{(1,2,-3),\;(6,2,1),\;(-8,2,-7)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Contamos</span><p>Son 3 vectores y $\dim\mathbb{R}^3=3$. Basta ver si son L.I.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante</span><div class="math">$$\begin{aligned}\begin{vmatrix}1&6&-8\\2&2&2\\-3&1&-7\end{vmatrix}&=1(-14-2)-6(-14+6)-8(2+6)\\&=-16+48-64=-32\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Interpretación</span><p>$\det=-32\neq0$: son L.I. y, por ser 3, también generan $\mathbb{R}^3$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es base de $\mathbb{R}^3$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-1c" data-group="t4" data-sec="4.6 Base" data-title="Bloque 9 · 1c" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 1c</span></p>
+  <h2>¿Es $B$ una base de $P_2(\mathbb{R})$?</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$B=\{t^2-3,\;-4t^2+2t,\;t^2+3t+5\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Contamos</span><p>Son 3 polinomios y $\dim P_2(\mathbb{R})=3$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Independencia</span><p>Es la misma familia del bloque 8 · 2b. Allí calculamos</p><div class="math">$$\begin{vmatrix}1&-4&1\\0&2&3\\-3&0&5\end{vmatrix}=52\neq0$$</div><p>así que es L.I.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es base de $P_2(\mathbb{R})$</span></div></li>
+  </ol>
+</section>
+
+<!-- 4.7 Dimensión -->
+<section class="slide" id="t4-dim-teo" data-group="t4" data-sec="4.7 Dimensión" data-title="Teoremas y definición" data-kind="thm">
+  <p class="eyebrow"><span class="kind k-thm">Teoremas</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Dimensión de un espacio vectorial</h2>
+  <div class="box thm"><span class="label">Teorema</span><p>Si $A=\{v_1,v_2,\dots,v_n\}$ es una base de un espacio vectorial $V$, entonces $A^1=\{cv_1,v_2,\dots,v_n\}$, $c\neq0$, también es base de $V$. Entonces $V$ puede tener <b>infinitas bases</b>.</p></div>
+  <div class="box thm"><span class="label">Teorema</span><p>Si $A=\{v_1,\dots,v_n\}$ y $B=\{w_1,\dots,w_m\}$ son dos bases de un espacio vectorial $V$, entonces $m=n$; es decir, cualquier base de $V$ tiene el <b>mismo número de vectores</b>.</p></div>
+  <div class="box def"><span class="label">Definición</span><p>La <b>dimensión</b> de un espacio vectorial $V$ ($\dim V$) es el número total de vectores de cualquiera de sus bases.</p></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Hay muchas bases, pero todas tienen la misma cantidad de vectores. Esa cantidad es la dimensión.</p></div>
+</section>
+
+<section class="slide" id="t4-dim-ej" data-group="t4" data-sec="4.7 Dimensión" data-title="Ejemplos: bases canónicas" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplos</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Las bases más simples (canónicas)</h2>
+  <div class="table-wrap">
+    <table class="t">
+      <thead><tr><th>Espacio</th><th>Base</th><th>Dimensión</th></tr></thead>
+      <tbody>
+        <tr><td>$\mathbb{R}^2$</td><td>$\{(1,0),(0,1)\}$</td><td>$2$</td></tr>
+        <tr><td>$\mathbb{R}^3$</td><td>$\{(1,0,0),(0,1,0),(0,0,1)\}$</td><td>$3$</td></tr>
+        <tr><td>$\mathbb{R}^n$</td><td>en general</td><td>$n$</td></tr>
+        <tr><td>$M_2(\mathbb{R})$</td><td>$\left\{\begin{pmatrix}1&0\\0&0\end{pmatrix},\begin{pmatrix}0&1\\0&0\end{pmatrix},\begin{pmatrix}0&0\\1&0\end{pmatrix},\begin{pmatrix}0&0\\0&1\end{pmatrix}\right\}$</td><td>$4$</td></tr>
+        <tr><td>$M_{m\times n}(\mathbb{R})$</td><td>en general</td><td>$m\times n$</td></tr>
+        <tr><td>$P_2(\mathbb{R})$</td><td>$\{t^2,\;t,\;1\}$</td><td>$3$</td></tr>
+        <tr><td>$P_n(\mathbb{R})$</td><td>en general</td><td>$n+1$</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box obs"><span class="label">Para qué sirve</span><p>Si $\dim V=n$: con <b>más</b> de $n$ vectores la familia es L.D.; con <b>menos</b> de $n$ no genera $V$; con <b>exactamente</b> $n$, basta comprobar que sean L.I.</p></div>
+</section>
+
+<!-- 4.8 Bases de subespacios -->
+<section class="slide" id="t4-bsub-met" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Método" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-obs">Método</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Cómo hallar una base y la dimensión de un subespacio</h2>
+  <ol class="plist">
+    <li><div><span class="nm">Despejar.</span> <span class="w">De cada ecuación despejamos una variable.</span></div></li>
+    <li><div><span class="nm">Sustituir.</span> <span class="w">Reemplazamos en el vector genérico, que queda escrito solo con las variables libres.</span></div></li>
+    <li><div><span class="nm">Separar.</span> <span class="w">Separamos el vector en una suma: una parte por cada variable libre, sacándola como factor.</span></div></li>
+    <li><div><span class="nm">Leer la base.</span> <span class="w">Los vectores que acompañan a cada variable libre forman la base.</span></div></li>
+    <li><div><span class="nm">Contar.</span> <span class="w">La dimensión es el número de variables libres: (número de variables) − (número de ecuaciones independientes).</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-bsub-ej1" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Ejemplo 1 (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 1</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Base y dimensión de $W_1$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_1=\{(a,b,c)\in\mathbb{R}^3\,/\,a+b-c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$c=a+b$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$(a,b,c)=(a,\;b,\;a+b)=a(1,0,1)+b(0,1,1)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Son L.I.</span><p>Ninguno es múltiplo del otro (uno tiene 0 donde el otro tiene 1).</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(1,0,1),(0,1,1)\}$ · $\dim W_1=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-bsub-ej2" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Ejemplo 2 (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 2</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Base y dimensión de $W_2$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_2=\{at^2+bt+c\in P_2(\mathbb{R})\,/\,2a-b-c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$c=2a-b$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$at^2+bt+(2a-b)=a(t^2+2)+b(t-1)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{t^2+2,\;t-1\}$ · $\dim W_2=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-bsub-ej3" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Ejemplo 3 (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 3</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Base y dimensión de $W_3$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_3=\left\{\begin{pmatrix}a&b\\c&d\end{pmatrix}\in M_2(\mathbb{R})\,/\,2a-d=0\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$d=2a$. Quedan libres $a$, $b$ y $c$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$\begin{pmatrix}a&b\\c&2a\end{pmatrix}=a\begin{pmatrix}1&0\\0&2\end{pmatrix}+b\begin{pmatrix}0&1\\0&0\end{pmatrix}+c\begin{pmatrix}0&0\\1&0\end{pmatrix}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base: las 3 matrices de arriba · $\dim W_3=3$</span><p class="muted small">4 variables − 1 ecuación = 3.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-bsub-ej4" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Ejemplo 4 (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo 4</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Base y dimensión de $W_4$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_4=\left\{\begin{pmatrix}a&b\\c&d\end{pmatrix}\in M_2(\mathbb{R})\,/\,a-3d=0\ \text{ y }\ -b+4c=0\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$a=3d$ y $b=4c$. Quedan libres $c$ y $d$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$\begin{pmatrix}3d&4c\\c&d\end{pmatrix}=c\begin{pmatrix}0&4\\1&0\end{pmatrix}+d\begin{pmatrix}3&0\\0&1\end{pmatrix}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base: las 2 matrices de arriba · $\dim W_4=2$</span><p class="muted small">4 variables − 2 ecuaciones = 2.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-2a" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Bloque 9 · 2a" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 2a</span></p>
+  <h2>Base y dimensión de $W_1$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_1=\{(a,b,c)\in\mathbb{R}^3\,/\,2a+b-3c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$b=-2a+3c$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$(a,\;-2a+3c,\;c)=a(1,-2,0)+c(0,3,1)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(1,-2,0),(0,3,1)\}$ · $\dim W_1=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-2b" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Bloque 9 · 2b" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 2b</span></p>
+  <h2>Base y dimensión de $W_2$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_2=\{at^2+bt+c\in P_2(\mathbb{R})\,/\,a-4b-5c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$a=4b+5c$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$(4b+5c)t^2+bt+c=b(4t^2+t)+c(5t^2+1)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{4t^2+t,\;5t^2+1\}$ · $\dim W_2=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-2c" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Bloque 9 · 2c (ℝ⁴)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 2c</span></p>
+  <h2>Base y dimensión de $W_4$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$W_4=\{(a,b,c,d)\in\mathbb{R}^4\,/\,a-b+3d=0\ \text{ y }\ -b+4c-2d=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos de la segunda</span><p>$b=4c-2d$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Reemplazamos en la primera</span><p>$$a=b-3d=4c-2d-3d=4c-5d$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$(4c-5d,\;4c-2d,\;c,\;d)=c(4,4,1,0)+d(-5,-2,0,1)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(4,4,1,0),(-5,-2,0,1)\}$ · $\dim W_4=2$</span></div></li>
+  </ol>
+</section>
+
+<!-- 4.9 Subespacio generado -->
+<section class="slide" id="t4-gen-def" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Teorema y método" data-kind="thm">
+  <p class="eyebrow"><span class="kind k-thm">Teorema</span><span class="src">Diapositiva 4.3</span></p>
+  <h2>Subespacios generados</h2>
+  <p>Si se agrupan todos los vectores de $V$ que son expresables como combinación lineal de $v_1,v_2,\dots,v_n$, se obtiene un subespacio de $V$ llamado <b>subespacio lineal generado</b> por $\{v_1,v_2,\dots,v_n\}$.</p>
+  <div class="box thm"><span class="label">Teorema</span>
+    <p>Sea $A=\{v_1,v_2,\dots,v_n\}$ una familia de vectores de un espacio vectorial $V$. El conjunto $W$ de todas las combinaciones lineales de $v_1,v_2,\dots,v_n$ es un subespacio de $V$:</p>
+    <div class="math">$$W=\left\{v\in V\,/\,v=\sum_{i=1}^{n}\alpha_iv_i,\;\alpha_i\in\mathbb{R},\;v_i\in A\right\}$$</div>
+    <p>y se llama <b>subespacio vectorial generado</b> por la familia $A$.</p></div>
+  <div class="box obs"><span class="label">Método</span>
+    <p><b>1.</b> Vector genérico $=\alpha_1v_1+\dots+\alpha_nv_n$. <b>2.</b> Eliminamos los $\alpha$ del sistema. <b>3.</b> Lo que queda (ecuaciones solo con $x,y,z,\dots$) describe $W$. <b>4.</b> Base: los vectores de $A$ que son L.I. (quitamos los que sobran). <b>5.</b> Dimensión: cuántos quedan.</p></div>
+</section>
+
+<section class="slide" id="t4-b9-3-1" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Bloque 9 · 3.1 (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 3.1</span></p>
+  <h2>Subespacio generado por $A$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$A=\left\{(1,2,-3),\;\left(1,4,\tfrac32\right)\right\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Vector genérico</span><div class="math">$$(x,y,z)=\alpha(1,2,-3)+\beta\left(1,4,\tfrac32\right)\;\Rightarrow\;\begin{cases}\alpha+\beta=x\\2\alpha+4\beta=y\\-3\alpha+\tfrac32\beta=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Con las dos primeras</span><p>$\alpha=x-\beta$, luego $$2x-2\beta+4\beta=y\Rightarrow\beta=\dfrac{y-2x}{2}$$ y $\alpha=\dfrac{4x-y}{2}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Reemplazamos en la tercera</span><div class="math">$$-3\cdot\frac{4x-y}{2}+\frac32\cdot\frac{y-2x}{2}=z\;\xrightarrow{\;\times4\;}\;-24x+6y+3y-6x=4z$$</div><p>Ordenando: $30x-9y+4z=0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Base</span><p>Los dos vectores no son múltiplos uno del otro, así que son L.I.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$W=\{(x,y,z)\in\mathbb{R}^3\,/\,30x-9y+4z=0\}$$</span><p>Base $A$ · $\dim W=2$ (es un plano que pasa por el origen).</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-3-2" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Bloque 9 · 3.2 (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 3.2</span></p>
+  <h2>Subespacio generado por $B$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$B=\{(0,-1,-3),\;(1,1,2),\;(3,5,-1)\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Vector genérico</span><div class="math">$$(x,y,z)=\alpha(0,-1,-3)+\beta(1,1,2)+\gamma(3,5,-1)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante</span><div class="math">$$\begin{vmatrix}0&1&3\\-1&1&5\\-3&2&-1\end{vmatrix}=0-1(1+15)+3(-2+3)=-16+3=-13$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Interpretación</span><p>$\det\neq0$: el sistema tiene solución para todo $(x,y,z)$. No aparece ninguna condición.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$W=\mathbb{R}^3$</span><p>Base $B$ (o la canónica) · $\dim W=3$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-3-3" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Bloque 9 · 3.3 (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 3.3</span></p>
+  <h2>Subespacio generado por $C$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$C=\{t^2-2t+3,\;2t^2-t-4,\;-3t+10\}\subset P_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Polinomio genérico $xt^2+yt+z$</span><div class="math">$$\begin{cases}t^2: & \alpha+2\beta=x\\ t: & -2\alpha-\beta-3\gamma=y\\ 1: & 3\alpha-4\beta+10\gamma=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Eliminamos $\alpha=x-2\beta$</span><p>En la segunda: $$-2x+3\beta-3\gamma=y\Rightarrow\beta-\gamma=\dfrac{2x+y}{3}$$<br>En la tercera: $$3x-10\beta+10\gamma=z\Rightarrow\beta-\gamma=\dfrac{3x-z}{10}$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Igualamos las dos expresiones</span><div class="math">$$\frac{2x+y}{3}=\frac{3x-z}{10}\;\Rightarrow\;20x+10y=9x-3z\;\Rightarrow\;11x+10y+3z=0$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">¿Sobra alguno?</span><p>Sí: $$-3t+10=2(t^2-2t+3)-(2t^2-t-4)$$ Quitamos el tercero; los dos primeros son L.I.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$W=\{xt^2+yt+z\,/\,11x+10y+3z=0\}$$</span><p>Base $\{t^2-2t+3,\;2t^2-t-4\}$ · $\dim W=2$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-3-4" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Bloque 9 · 3.4 (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 3.4</span></p>
+  <h2>Subespacio generado por $D$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$D=\{3t^2-2t+5,\;t^2-t-4,\;2t^2-t+9\}\subset P_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Polinomio genérico $xt^2+yt+z$</span><div class="math">$$\begin{cases}3\alpha+\beta+2\gamma=x\\-2\alpha-\beta-\gamma=y\\5\alpha-4\beta+9\gamma=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Sumamos las dos primeras</span><p>$$\alpha+\gamma=x+y\Rightarrow\alpha=x+y-\gamma$$ Y de la segunda: $\beta=-2x-3y+\gamma$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Reemplazamos en la tercera</span><div class="math">$$5(x+y-\gamma)-4(-2x-3y+\gamma)+9\gamma=z\;\Rightarrow\;13x+17y=z$$</div><p>Las $\gamma$ se cancelan: queda la condición $13x+17y-z=0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">¿Sobra alguno?</span><p>Sí: $$2t^2-t+9=(3t^2-2t+5)-(t^2-t-4)$$</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$W=\{xt^2+yt+z\,/\,13x+17y-z=0\}$$</span><p>Base $\{3t^2-2t+5,\;t^2-t-4\}$ · $\dim W=2$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-3-5" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Bloque 9 · 3.5 (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 3.5</span></p>
+  <h2>Subespacio generado por $E$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$E=\left\{\begin{pmatrix}-1&2\\-1&0\end{pmatrix},\begin{pmatrix}5&3\\1&-1\end{pmatrix},\begin{pmatrix}2&-1\\-1&4\end{pmatrix}\right\}\subset M_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Matriz genérica $\begin{pmatrix}x&y\\z&w\end{pmatrix}$</span><div class="math">$$\begin{cases}-\alpha+5\beta+2\gamma=x\\2\alpha+3\beta-\gamma=y\\-\alpha+\beta-\gamma=z\\-\beta+4\gamma=w\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos desde abajo</span><p>$\beta=4\gamma-w$ y $\alpha=\beta-\gamma-z=3\gamma-w-z$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Primera ecuación</span><p>$$-(3\gamma-w-z)+5(4\gamma-w)+2\gamma=x\Rightarrow 19\gamma=x+4w-z$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segunda ecuación</span><p>$$2(3\gamma-w-z)+3(4\gamma-w)-\gamma=y\Rightarrow17\gamma-5w-2z=y$$ Reemplazando $\gamma$ y multiplicando por 19:</p><div class="math">$$17x-19y-55z-27w=0$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$W=\left\{\begin{pmatrix}x&y\\z&w\end{pmatrix}\,/\,17x-19y-55z-27w=0\right\}$$</span><p>Las tres matrices son L.I. ($\gamma$, $\beta$, $\alpha$ quedan determinados): base $E$ · $\dim W=3$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-b9-3-6" data-group="t4" data-sec="4.9 Subespacio generado" data-title="Bloque 9 · 3.6 (ℝ⁴)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 9 · 3.6</span></p>
+  <h2>Subespacio generado por $F$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$F=\{(1,3,-4,1),\;(-1,3,0,-3)\}\subset\mathbb{R}^4$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Vector genérico $(x,y,z,w)$</span><div class="math">$$\begin{cases}\alpha-\beta=x\\3\alpha+3\beta=y\\-4\alpha=z\\\alpha-3\beta=w\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>De la tercera $\alpha=-\tfrac z4$; de la primera $\beta=\alpha-x=-\tfrac z4-x$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Las otras dos dan condiciones</span><p>Segunda: $$3\left(-\tfrac z4\right)+3\left(-\tfrac z4-x\right)=y\Rightarrow 6x+2y+3z=0$$<br>Cuarta: $$-\tfrac z4-3\left(-\tfrac z4-x\right)=w\Rightarrow 6x+z-2w=0$$</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$W=\{(x,y,z,w)\,/\,6x+2y+3z=0,\;6x+z-2w=0\}$$</span><p>Base $F$ (no son múltiplos) · $\dim W=2$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t4-resumen" data-group="t4" data-sec="4.10 Resumen" data-title="Recetas del Tema 4" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-obs">Resumen</span></p>
+  <h2>Recetas rápidas del Tema 4</h2>
+  <div class="table-wrap">
+    <table class="t">
+      <thead><tr><th>Pregunta</th><th>Qué hacer</th></tr></thead>
+      <tbody>
+        <tr><td>¿Es subespacio?</td><td>¿Está el $0$? ¿La suma y el producto por escalar se quedan dentro?</td></tr>
+        <tr><td>¿Es combinación lineal?</td><td>Plantear $v=\sum\alpha_iv_i$; si el sistema tiene solución, sí.</td></tr>
+        <tr><td>¿Es L.I.?</td><td>Igualar a $0$; si solo sale $\alpha_i=0$ (o $\det\neq0$), sí.</td></tr>
+        <tr><td>¿Genera $V$?</td><td>Vector genérico; si no aparece ninguna condición, sí.</td></tr>
+        <tr><td>¿Es base?</td><td>L.I. y genera. Con $n=\dim V$ vectores, basta $\det\neq0$.</td></tr>
+        <tr><td>Base de un subespacio</td><td>Despejar, sustituir, separar por variables libres.</td></tr>
+        <tr><td>Subespacio generado</td><td>Eliminar los $\alpha$; las condiciones que quedan describen $W$.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== TEMA 5 ===================== -->
+<section class="slide" id="t5-portada" data-group="t5" data-sec="Tema 5 · Inicio" data-title="Contenido del tema" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Tema 5</span></p>
+  <h1>Espacios con producto interno</h1>
+  <p class="lead">Al espacio vectorial le agregamos una herramienta nueva, el producto interno, que permite medir longitudes, distancias y ángulos rectos.</p>
+  <ol class="plist">
+    <li><div><span class="nm">Producto interno</span> <span class="w">— definición y los tres productos estándar</span></div></li>
+    <li><div><span class="nm">Norma y distancia</span> <span class="w">— cuánto mide un vector y qué tan lejos están dos</span></div></li>
+    <li><div><span class="nm">Ortogonalidad</span> <span class="w">— conjuntos ortogonales, ortonormales y vector unitario</span></div></li>
+    <li><div><span class="nm">Gram–Schmidt</span> <span class="w">— convertir cualquier base en una base ortonormal</span></div></li>
+  </ol>
+</section>
+
+<!-- 5.1 Producto interno -->
+<section class="slide" id="t5-def" data-group="t5" data-sec="5.1 Producto interno" data-title="Definición" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Producto interno</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $V$ cualquier E.V. real. Un <b>producto interno (P.I.)</b> en $V$ es una aplicación que asigna a cada par ordenado de vectores $u,v\in V$ un número real $\langle u,v\rangle$ que satisface:</p>
+  </div>
+  <ol class="plist">
+    <li><div><div class="math">$\langle u,u\rangle>0$, para $u\neq0_V$</div><span class="w">Un vector «multiplicado» por sí mismo da positivo (salvo el cero).</span></div></li>
+    <li><div><div class="math">$\langle u,v\rangle=\langle v,u\rangle$ para cualquier $u,v\in V$</div><span class="w">Simetría: el orden no importa.</span></div></li>
+    <li><div><div class="math">$\langle u+v,w\rangle=\langle u,w\rangle+\langle v,w\rangle$ para cualquier $u,v,w\in V$</div><span class="w">Se reparte sobre la suma.</span></div></li>
+    <li><div><div class="math">$\langle cu,v\rangle=c\langle u,v\rangle$ para $u,v\in V$, $c$ escalar</div><span class="w">Los números salen afuera.</span></div></li>
+  </ol>
+  <div class="box simple"><span class="label">En palabras simples</span><p>El producto interno toma <b>dos vectores</b> y devuelve <b>un número</b>. Con ese número mediremos longitudes, distancias y perpendicularidad.</p></div>
+  <p class="muted small">En la diapositiva la propiedad 2 aparece como $\langle u,v\rangle=\langle u,v\rangle$; lo correcto es la simetría $\langle u,v\rangle=\langle v,u\rangle$.</p>
+</section>
+
+<section class="slide" id="t5-std-rn" data-group="t5" data-sec="5.1 Producto interno" data-title="P.I. estándar en ℝⁿ" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Producto interno estándar en $\mathbb{R}^n$</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Si $u=(u_1,u_2,\dots,u_n)$ y $v=(v_1,v_2,\dots,v_n)$, entonces</p>
+    <div class="math">$$\langle u,v\rangle=u_1v_1+u_2v_2+\dots+u_nv_n$$</div>
+    <p>es un producto interno en $\mathbb{R}^n$ llamado <b>producto interno estándar</b>.</p></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Se multiplican las componentes que están en la misma posición y se suman los resultados.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Ejemplo con $u=(1,3,4)$ y $v=(2,4,5)$</span><div class="math">$$\langle u,v\rangle=1\cdot2+3\cdot4+4\cdot5=2+12+20=34$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-std-pn" data-group="t5" data-sec="5.1 Producto interno" data-title="P.I. estándar en Pₙ" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Producto interno estándar en $P_n(\mathbb{R})$</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Si $P(t),Q(t)\in P_n(\mathbb{R})$, entonces</p>
+    <div class="math">$$\langle P(t),Q(t)\rangle=\int_0^1P(t)\,Q(t)\,dt$$</div>
+    <p>es un P.I. estándar en $P_n(\mathbb{R})$.</p></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Multiplicamos los dos polinomios e integramos el resultado entre $0$ y $1$.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Ejemplo con $P(t)=t$ y $Q(t)=t+1$</span><div class="math">$$\langle t,\,t+1\rangle=\int_0^1(t^2+t)\,dt=\left[\frac{t^3}{3}+\frac{t^2}{2}\right]_0^1=\frac13+\frac12=\frac56$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-std-mn" data-group="t5" data-sec="5.1 Producto interno" data-title="P.I. estándar en Mₙ" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Producto interno estándar en $M_n(\mathbb{R})$</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Si $A,B\in M_n(\mathbb{R})$, entonces</p>
+    <div class="math">$$\langle A,B\rangle=\operatorname{tr}(A^tB)$$</div>
+    <p>donde $\operatorname{tr}(A)=$ traza de $A=a_{11}+a_{22}+\dots+a_{nn}$, es un P.I. estándar en $M_n(\mathbb{R})$.</p></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>La traza es la suma de la diagonal. En la práctica, $\operatorname{tr}(A^tB)$ da lo mismo que multiplicar las entradas que están en la misma posición y sumar.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Ejemplo con $A=\begin{pmatrix}2&3\\1&-4\end{pmatrix}$ y $B=\begin{pmatrix}-4&7\\1&-4\end{pmatrix}$</span>
+      <div class="math">$$\begin{gathered}A^tB=\begin{pmatrix}2&1\\3&-4\end{pmatrix}\begin{pmatrix}-4&7\\1&-4\end{pmatrix}=\begin{pmatrix}-7&10\\-16&37\end{pmatrix}\\[4pt]\operatorname{tr}(A^tB)=-7+37=30\end{gathered}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Atajo entrada por entrada</span><div class="math">$$2(-4)+3(7)+1(1)+(-4)(-4)=-8+21+1+16=30\ \checkmark$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-euclid" data-group="t5" data-sec="5.1 Producto interno" data-title="Espacio euclidiano" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Espacio con producto interno</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Un E.V. real en el cual se ha definido un P.I. se denomina <b>espacio vectorial con producto interno</b>. Si el espacio es de dimensión finita se denomina <b>espacio euclidiano</b>.</p></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>$\mathbb{R}^n$, $P_n(\mathbb{R})$ y $M_n(\mathbb{R})$, cada uno con su producto interno estándar, son espacios euclidianos: tienen dimensión finita y en ellos podemos medir.</p></div>
+</section>
+
+<!-- 5.2 Norma y distancia -->
+<section class="slide" id="t5-norma" data-group="t5" data-sec="5.2 Norma y distancia" data-title="Norma" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Longitud o norma de un vector</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $V$ un E.V. con P.I. y $v\in V$; entonces se define la <b>longitud</b> (magnitud, tamaño, módulo, norma) de $v$ como</p>
+    <div class="math">$$|v|=\sqrt{\langle v,v\rangle}$$</div></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Hacemos el producto interno del vector consigo mismo y sacamos raíz cuadrada. En $\mathbb{R}^n$ es el teorema de Pitágoras.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">En $\mathbb{R}^3$</span><div class="math">$$\begin{gathered}|(1,3,4)|=\sqrt{1^2+3^2+4^2}=\sqrt{26}\\ |(0,1,-1)|=\sqrt{0+1+1}=\sqrt2\end{gathered}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">En $P_1(\mathbb{R})$</span><div class="math">$$|t|=\sqrt{\int_0^1t\cdot t\,dt}=\sqrt{\tfrac13}=\frac{1}{\sqrt3}$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-dist" data-group="t5" data-sec="5.2 Norma y distancia" data-title="Distancia" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Distancia entre dos vectores</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Si $V$ es un E.V. con P.I., se define la <b>distancia</b> entre dos vectores $u,v$ de $V$ como</p>
+    <div class="math">$$d(u,v)=|u-v|$$</div></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Restamos los vectores y medimos la norma de la resta.</p></div>
+  <div class="box obs"><span class="label">Receta</span><p><b>1.</b> Calcular $u-v$. <b>2.</b> Calcular $\langle u-v,\,u-v\rangle$. <b>3.</b> Sacar raíz cuadrada.</p></div>
+</section>
+
+<section class="slide" id="t5-b10-1a" data-group="t5" data-sec="5.2 Norma y distancia" data-title="Bloque 10 · 1a (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · 1a</span></p>
+  <h2>Distancia entre $u$ y $v$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$u=(1,3,4),\qquad v=(2,4,5)$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$u-v=(1-2,\;3-4,\;4-5)=(-1,-1,-1)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Norma de la resta</span><div class="math">$$|u-v|=\sqrt{(-1)^2+(-1)^2+(-1)^2}=\sqrt3$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$d(u,v)=\sqrt3\approx1{,}732$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-b10-1b" data-group="t5" data-sec="5.2 Norma y distancia" data-title="Bloque 10 · 1b (polinomios)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · 1b</span></p>
+  <h2>Distancia entre $p$ y $q$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$p(t)=3t^2-2t+1,\qquad q(t)=t^2-3t+2$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$p-q=2t^2+t-1$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Elevamos al cuadrado</span><div class="math">$$(2t^2+t-1)^2=4t^4+4t^3-3t^2-2t+1$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Integramos de 0 a 1</span><div class="math">$$\int_0^1(4t^4+4t^3-3t^2-2t+1)\,dt=\frac45+1-1-1+1=\frac45$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$d(p,q)=\sqrt{\tfrac45}=\dfrac{2}{\sqrt5}=\dfrac{2\sqrt5}{5}\approx0{,}894$$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-b10-1c" data-group="t5" data-sec="5.2 Norma y distancia" data-title="Bloque 10 · 1c (matrices)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · 1c</span></p>
+  <h2>Distancia entre $A$ y $B$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$A=\begin{pmatrix}2&3\\1&-4\end{pmatrix},\qquad B=\begin{pmatrix}-4&7\\1&-4\end{pmatrix}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$A-B=\begin{pmatrix}6&-4\\0&0\end{pmatrix}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Producto interno de la resta consigo misma</span><div class="math">$$\operatorname{tr}\big((A-B)^t(A-B)\big)=6^2+(-4)^2+0^2+0^2=52$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$d(A,B)=\sqrt{52}=2\sqrt{13}\approx7{,}211$</span></div></li>
+  </ol>
+</section>
+
+<!-- 5.3 Ortogonalidad -->
+<section class="slide" id="t5-ort" data-group="t5" data-sec="5.3 Ortogonalidad" data-title="Vectores ortogonales" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Vectores ortogonales</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $V$ un E.V. con P.I.; los vectores $u,v\in V$ son <b>ortogonales</b> (o perpendiculares) si</p>
+    <div class="math">$$\langle u,v\rangle=0$$</div></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Dos vectores son ortogonales cuando su producto interno da cero. En el plano o el espacio, eso significa que forman un ángulo recto.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Ejemplo</span><div class="math">$$\langle(0,1,-1),\,(0,1,1)\rangle=0+1-1=0$$</div><p>Son ortogonales.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-conj-ort" data-group="t5" data-sec="5.3 Ortogonalidad" data-title="Conjunto ortogonal" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Conjunto ortogonal</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $V$ un E.V. con P.I. Un conjunto $S$ de vectores de $V$ es <b>ortogonal</b> si dos vectores cualesquiera distintos de $S$ son ortogonales.</p></div>
+  <div class="box ex"><span class="label">Ejemplo de la diapositiva</span><div class="math">$$S=\{(1,0,0),\;(0,1,-1),\;(0,1,1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Revisamos todas las parejas</span><div class="math">$$\begin{aligned}\langle(1,0,0),(0,1,-1)\rangle&=0\\\langle(1,0,0),(0,1,1)\rangle&=0\\\langle(0,1,-1),(0,1,1)\rangle&=0+1-1=0\end{aligned}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$S$ es ortogonal</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-ortonormal" data-group="t5" data-sec="5.3 Ortogonalidad" data-title="Conjunto ortonormal" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Definición</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Conjunto ortonormal</h2>
+  <div class="box def"><span class="label">Definición</span>
+    <p>Sea $V$ un E.V. con P.I. Un conjunto $S$ es <b>ortonormal</b> si $S$ es ortogonal y además cada vector de $S$ tiene longitud unitaria.</p></div>
+  <div class="math">$$\text{Ortonormal}\;=\;\text{ortogonal}\;+\;\text{todos de norma }1$$</div>
+  <div class="box ex"><span class="label">Ejemplo de la diapositiva</span><div class="math">$$S=\left\{(1,0,0),\;\left(0,\tfrac{1}{\sqrt2},-\tfrac{1}{\sqrt2}\right),\;\left(0,\tfrac{1}{\sqrt2},\tfrac{1}{\sqrt2}\right)\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Es ortogonal</span><p>Son los mismos vectores del ejemplo anterior, divididos por un número; los productos internos siguen dando $0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Cada uno mide 1</span><div class="math">$$\left|\left(0,\tfrac{1}{\sqrt2},\pm\tfrac{1}{\sqrt2}\right)\right|=\sqrt{0+\tfrac12+\tfrac12}=1,\qquad|(1,0,0)|=1$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$S$ es ortonormal</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-unit" data-group="t5" data-sec="5.3 Ortogonalidad" data-title="Vector unitario" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-obs">Observación</span><span class="src">Diapositiva 5.1</span></p>
+  <h2>Vector unitario</h2>
+  <div class="box obs"><span class="label">Observación</span>
+    <p>Si $v$ es un vector distinto de cero de un E.V. con P.I., siempre podemos hallar un vector de longitud unitaria (denominado <b>vector unitario</b>) en la misma dirección de $v$. Para esto se toma</p>
+    <div class="math">$$u=\frac{v}{|v|}$$</div></div>
+  <div class="box simple"><span class="label">En palabras simples</span><p>Dividir un vector por su norma lo «encoge» o «estira» hasta que mida 1, sin cambiar su dirección. A esto se le llama <b>normalizar</b>.</p></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Normalizamos $v=(0,1,-1)$</span><div class="math">$$|v|=\sqrt2\;\Rightarrow\;u=\frac{(0,1,-1)}{\sqrt2}=\left(0,\tfrac{1}{\sqrt2},-\tfrac{1}{\sqrt2}\right)$$</div><p>Así se obtuvo el conjunto ortonormal de la diapositiva anterior.</p></div></li>
+  </ol>
+</section>
+
+<!-- 5.4 Gram–Schmidt -->
+<section class="slide" id="t5-gs-teo" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Teorema y fórmulas" data-kind="thm">
+  <p class="eyebrow"><span class="kind k-thm">Teorema</span><span class="src">Diapositiva 5.2</span></p>
+  <h2>Proceso de ortonormalización de Gram–Schmidt</h2>
+  <div class="box thm"><span class="label">Teorema</span>
+    <p>Sea $V$ un E.V. con P.I. y sea $W\neq\{0_V\}$ un subespacio de $V$ con base $S=\{w_1,w_2,\dots,w_n\}$; entonces existe una base ortonormal $S''=\{u_1,u_2,\dots,u_n\}$ para $W$.</p></div>
+  <p><b>Paso 1.</b> Primero se construye una base <b>ortogonal</b> mediante las fórmulas:</p>
+  <div class="math">$$\begin{aligned}z_1&=w_1\\[2pt] z_2&=w_2-\frac{\langle w_2,z_1\rangle}{|z_1|^2}\,z_1\\[2pt] z_3&=w_3-\frac{\langle w_3,z_1\rangle}{|z_1|^2}\,z_1-\frac{\langle w_3,z_2\rangle}{|z_2|^2}\,z_2\\ &\;\;\vdots\end{aligned}$$</div>
+  <p>luego $S'=\{z_1,z_2,\dots,z_n\}$ es una base ortogonal de $W$.</p>
+  <div class="box simple"><span class="label">En palabras simples</span><p>A cada vector nuevo le quitamos «la sombra» (la proyección) que hace sobre los vectores que ya arreglamos. Lo que queda es perpendicular a todos ellos.</p></div>
+</section>
+
+<section class="slide" id="t5-gs-norm" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Normalizar al final" data-kind="thm">
+  <p class="eyebrow"><span class="kind k-thm">Teorema (continuación)</span><span class="src">Diapositiva 5.2</span></p>
+  <h2>De ortogonal a ortonormal</h2>
+  <p><b>Paso 2.</b> Sea ahora</p>
+  <div class="math">$$u_1=\frac{z_1}{|z_1|},\qquad u_2=\frac{z_2}{|z_2|},\qquad u_3=\frac{z_3}{|z_3|},\;\dots$$</div>
+  <p>luego $S''=\{u_1,u_2,\dots,u_n\}$ es una <b>base ortonormal</b> de $W$.</p>
+  <figure class="fig">
+    <svg viewBox="0 0 300 210" width="300" role="img" aria-label="w2 se descompone en su sombra sobre z1 más z2, que es perpendicular a z1">
+      <defs>
+        <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v1"/></marker>
+        <marker id="g2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v2"/></marker>
+        <marker id="g3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v3"/></marker>
+      </defs>
+      <line class="dash" x1="170" y1="40" x2="170" y2="170"/>
+      <path class="dash" d="M160,170 L160,160 L170,160"/>
+      <line class="v1" x1="30" y1="170" x2="270" y2="170" stroke-width="2.2" marker-end="url(#g1)"/>
+      <line class="v2" x1="30" y1="170" x2="170" y2="40" stroke-width="2.2" marker-end="url(#g2)"/>
+      <line class="v3" x1="30" y1="170" x2="30" y2="42" stroke-width="2.6" marker-end="url(#g3)"/>
+      <text x="236" y="190">z₁ = w₁</text>
+      <text x="108" y="88">w₂</text>
+      <text x="38" y="60">z₂</text>
+      <text class="m" x="64" y="190">sombra de w₂ sobre z₁</text>
+    </svg>
+    <figcaption>$z_2$ es lo que queda de $w_2$ después de quitarle su sombra sobre $z_1$. Por eso $z_2$ es perpendicular a $z_1$.</figcaption>
+  </figure>
+  <div class="box obs"><span class="label">Truco para simplificar</span><p>Antes de normalizar puedes multiplicar cualquier $z_i$ por un número positivo para quitar fracciones: su dirección no cambia y el resultado final $u_i$ es el mismo.</p></div>
+</section>
+
+<section class="slide" id="t5-gs1" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Bloque 10 · ortonormalizar 1 (ℝ²)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · ortonormalizar 1</span></p>
+  <h2>Ortonormalizar $S$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$S=\{(1,4),\;(-3,1)\}\subset\mathbb{R}^2$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><p>$z_1=w_1=(1,4)$, con $|z_1|^2=1+16=17$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><p>$\langle w_2,z_1\rangle=-3+4=1$.</p><div class="math">$$z_2=(-3,1)-\frac{1}{17}(1,4)=\left(-\frac{52}{17},\frac{13}{17}\right)=\frac{13}{17}(-4,1)$$</div><p>Usamos la dirección $(-4,1)$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos que son ortogonales</span><p>$\langle(1,4),(-4,1)\rangle=-4+4=0$ ✓</p></div></li>
+    <li class="step"><div class="body"><span class="st">Normalizamos</span><p>$|(1,4)|=\sqrt{17}$ y $|(-4,1)|=\sqrt{17}$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\left(\tfrac{1}{\sqrt{17}},\tfrac{4}{\sqrt{17}}\right),\;\left(-\tfrac{4}{\sqrt{17}},\tfrac{1}{\sqrt{17}}\right)\right\}$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-gs2" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Bloque 10 · ortonormalizar 2 (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · ortonormalizar 2</span></p>
+  <h2>Ortonormalizar $S$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$S=\{(3,0,-1),\;(1,1,0),\;(-1,-2,4)\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><p>$z_1=(3,0,-1)$, con $|z_1|^2=10$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><p>$\langle w_2,z_1\rangle=3+0+0=3$.</p><div class="math">$$z_2=(1,1,0)-\frac{3}{10}(3,0,-1)=\left(\tfrac1{10},1,\tfrac3{10}\right)=\tfrac1{10}(1,10,3)$$</div><p>$|z_2|^2=\tfrac{1+100+9}{100}=\tfrac{11}{10}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Productos para el tercero</span><p>$\langle w_3,z_1\rangle=-3+0-4=-7$ y $\langle w_3,z_2\rangle=\tfrac{-1-20+12}{10}=-\tfrac{9}{10}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Tercer vector</span><div class="math">$$\begin{aligned}z_3&=(-1,-2,4)+\frac{7}{10}(3,0,-1)+\frac{9/10}{11/10}\cdot\tfrac1{10}(1,10,3)\\&=\left(\tfrac{13}{11},-\tfrac{13}{11},\tfrac{39}{11}\right)=\tfrac{13}{11}(1,-1,3)\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Normalizamos las direcciones</span><p>$|(3,0,-1)|=\sqrt{10}$, $\;|(1,10,3)|=\sqrt{110}$, $\;|(1,-1,3)|=\sqrt{11}$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\tfrac{1}{\sqrt{10}}(3,0,-1),\;\tfrac{1}{\sqrt{110}}(1,10,3),\;\tfrac{1}{\sqrt{11}}(1,-1,3)\right\}$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-gs3" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Bloque 10 · ortonormalizar 3 (ℝ³)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · ortonormalizar 3</span></p>
+  <h2>Ortonormalizar $S$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$S=\{(5,1,-1),\;(3,1,1),\;(3,-2,1)\}\subset\mathbb{R}^3$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><p>$z_1=(5,1,-1)$, con $|z_1|^2=27$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><p>$\langle w_2,z_1\rangle=15+1-1=15$.</p><div class="math">$$z_2=(3,1,1)-\frac{15}{27}(5,1,-1)=\tfrac19(2,4,14)=\tfrac29(1,2,7)$$</div><p>Usamos la dirección $(1,2,7)$, con $|(1,2,7)|^2=54$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Tercer vector (usando $z_2=(1,2,7)$)</span><p>$\langle w_3,z_1\rangle=15-2-1=12$ y $\langle w_3,(1,2,7)\rangle=3-4+7=6$.</p><div class="math">$$\begin{aligned}z_3&=(3,-2,1)-\frac{12}{27}(5,1,-1)-\frac{6}{54}(1,2,7)\\&=\left(\tfrac23,-\tfrac83,\tfrac23\right)=\tfrac23(1,-4,1)\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos</span><p>$(5,1,-1)\cdot(1,2,7)=0$, $\;(5,1,-1)\cdot(1,-4,1)=0$, $\;(1,2,7)\cdot(1,-4,1)=0$ ✓</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\tfrac{1}{3\sqrt3}(5,1,-1),\;\tfrac{1}{3\sqrt6}(1,2,7),\;\tfrac{1}{3\sqrt2}(1,-4,1)\right\}$$</div><p class="muted small">Porque $\sqrt{27}=3\sqrt3$, $\sqrt{54}=3\sqrt6$ y $\sqrt{18}=3\sqrt2$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-gs4" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Bloque 10 · ortonormalizar 4 (P₁)" data-kind="ex">
+  <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · ortonormalizar 4</span></p>
+  <h2>Ortonormalizar $S$ en $P_1(\mathbb{R})$</h2>
+  <div class="box ex"><span class="label">Enunciado</span><div class="math">$$S=\{t,\;t+1\}\subset P_1(\mathbb{R}),\qquad \langle p,q\rangle=\int_0^1p\,q\,dt$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><div class="math">$$z_1=t,\qquad |z_1|^2=\int_0^1t^2\,dt=\tfrac13$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Producto para el segundo</span><div class="math">$$\langle t+1,\,t\rangle=\int_0^1(t^2+t)\,dt=\tfrac13+\tfrac12=\tfrac56$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><div class="math">$$z_2=(t+1)-\frac{5/6}{1/3}\,t=t+1-\tfrac52t=1-\tfrac32t$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Normas</span><div class="math">$$\begin{gathered}|z_1|=\tfrac{1}{\sqrt3}\\ |z_2|^2=\int_0^1\left(1-\tfrac32t\right)^2dt=1-\tfrac32+\tfrac34=\tfrac14\;\Rightarrow\;|z_2|=\tfrac12\end{gathered}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\sqrt3\,t,\;\;2-3t\right\}$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="t5-resumen" data-group="t5" data-sec="5.5 Resumen" data-title="Recetas del Tema 5" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-obs">Resumen</span></p>
+  <h2>Recetas rápidas del Tema 5</h2>
+  <div class="table-wrap">
+    <table class="t">
+      <thead><tr><th>Quiero…</th><th>Fórmula</th></tr></thead>
+      <tbody>
+        <tr><td>P.I. en $\mathbb{R}^n$</td><td>$u_1v_1+\dots+u_nv_n$</td></tr>
+        <tr><td>P.I. en $P_n$</td><td>$\int_0^1P(t)Q(t)\,dt$</td></tr>
+        <tr><td>P.I. en $M_n$</td><td>$\operatorname{tr}(A^tB)$ = suma de productos entrada por entrada</td></tr>
+        <tr><td>Norma</td><td>$|v|=\sqrt{\langle v,v\rangle}$</td></tr>
+        <tr><td>Distancia</td><td>$d(u,v)=|u-v|$</td></tr>
+        <tr><td>¿Ortogonales?</td><td>$\langle u,v\rangle=0$</td></tr>
+        <tr><td>¿Ortonormal?</td><td>Ortogonal y todos con norma 1</td></tr>
+        <tr><td>Vector unitario</td><td>$u=v/|v|$</td></tr>
+        <tr><td>Gram–Schmidt</td><td>$z_k=w_k-\sum\frac{\langle w_k,z_i\rangle}{|z_i|^2}z_i$, luego $u_k=z_k/|z_k|$</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== PRÁCTICA ===================== -->
+<section class="slide" id="tp-portada" data-group="tp" data-sec="Práctica · Inicio" data-title="Trabajo Práctico N° 2" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">Práctica resuelta</span><span class="src">MAT 223 · II-2026</span></p>
+  <h1>Trabajo Práctico N° 2</h1>
+  <p class="lead">Espacios vectoriales y espacios con producto interno. Cada inciso está en su propia pantalla, con la idea, los pasos y la respuesta.</p>
+  <div class="box obs"><span class="label">Cómo estudiarlo</span><p>Intenta cada inciso por tu cuenta y usa <kbd>Espacio</kbd> para ver un paso a la vez. Si te trabas, vuelve a la diapositiva de teoría del mismo tema (está indicada arriba de cada ejercicio).</p></div>
+  <div class="table-wrap">
+    <table class="t">
+      <thead><tr><th>Ej.</th><th>Tema</th><th>Teoría</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>¿Es subespacio?</td><td>4.2</td></tr>
+        <tr><td>2 · 3</td><td>Combinación lineal</td><td>4.3</td></tr>
+        <tr><td>4 · 5 · 6</td><td>L.I. y L.D.</td><td>4.4</td></tr>
+        <tr><td>7</td><td>Sistema de generadores</td><td>4.5</td></tr>
+        <tr><td>8</td><td>Bases</td><td>4.6</td></tr>
+        <tr><td>9 · 10 · 12</td><td>Base y dimensión de subespacios</td><td>4.8</td></tr>
+        <tr><td>11</td><td>Subespacio generado</td><td>4.9</td></tr>
+        <tr><td>13</td><td>Distancia</td><td>5.2</td></tr>
+        <tr><td>14</td><td>Ortogonal y ortonormal</td><td>5.3</td></tr>
+        <tr><td>15</td><td>Gram–Schmidt</td><td>5.4</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Ejercicio 1 -->
+<section class="slide" id="tp1a" data-group="tp" data-sec="Ejercicio 1 · Subespacios" data-title="1(a) a + b − 5c = 0" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 1(a)</span><span class="src">Teoría 4.2</span></p>
+  <h2>¿Es $W_1$ subespacio de $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_1=\{(a,b,c)\,/\,a+b-5c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Está el cero?</span><p>$0+0-5(0)=0$ ✓, entonces $(0,0,0)\in W_1$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Suma</span><p>Si $u=(a_1,b_1,c_1)$ y $v=(a_2,b_2,c_2)$ están en $W_1$:</p><div class="math">$$\begin{aligned}&(a_1+a_2)+(b_1+b_2)-5(c_1+c_2)\\&\qquad=\underbrace{(a_1+b_1-5c_1)}_{0}+\underbrace{(a_2+b_2-5c_2)}_{0}=0\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Producto por escalar</span><div class="math">$$\alpha a+\alpha b-5\alpha c=\alpha(a+b-5c)=\alpha\cdot0=0$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es subespacio de $\mathbb{R}^3$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp1b" data-group="tp" data-sec="Ejercicio 1 · Subespacios" data-title="1(b) c − 2a + 1 = 0" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 1(b)</span><span class="src">Teoría 4.2</span></p>
+  <h2>¿Es $W_3$ subespacio de $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_3=\{(a,b,c)\,/\,c-2a+1=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Está el cero?</span><p>$0-2(0)+1=1\neq0$. Entonces $(0,0,0)\notin W_3$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Lo confirmamos con la suma</span><p>$u=(0,0,-1)$ y $v=(1,0,1)$ están en $W_3$ (ambos dan $0$), pero $u+v=(1,0,0)$ da $0-2+1=-1\neq0$.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es subespacio</span><p class="muted small">El «$+1$» suelto es la señal: la ecuación no es homogénea.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp1c" data-group="tp" data-sec="Ejercicio 1 · Subespacios" data-title="1(c) c > 0" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 1(c)</span><span class="src">Teoría 4.2</span></p>
+  <h2>¿Es $W_4$ subespacio de $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_4=\{(a,b,c)\,/\,c>0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">¿Está el cero?</span><p>En $(0,0,0)$ tenemos $c=0$, que no es $>0$. No está.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Falla también el producto por escalar</span><p>$u=(0,0,1)\in W_4$, pero $(-1)\,u=(0,0,-1)$ tiene $c=-1<0$: se sale de $W_4$.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es subespacio</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp1d" data-group="tp" data-sec="Ejercicio 1 · Subespacios" data-title="1(d) a = 2b − 3c (matrices)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 1(d)</span><span class="src">Teoría 4.2</span></p>
+  <h2>¿Es $W_1$ subespacio de $M_{2\times2}(\mathbb{R})$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_1=\left\{\begin{pmatrix}a&b\\c&d\end{pmatrix}\in M_{2\times2}(\mathbb{R})\,/\,a=2b-3c\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Reescribimos la condición</span><p>Pasamos todo a un lado:</p><div class="math">$$a=2b-3c\iff a-2b+3c=0$$</div><p>Es una ecuación igualada a cero.</p></div></li>
+    <li class="step"><div class="body"><span class="st">¿Está la matriz nula?</span><p>$0-2(0)+3(0)=0$ ✓</p></div></li>
+    <li class="step"><div class="body"><span class="st">Suma</span><p>$$\begin{aligned}&(a_1+a_2)-2(b_1+b_2)+3(c_1+c_2)\\&\qquad=(a_1-2b_1+3c_1)+(a_2-2b_2+3c_2)=0+0=0\ \checkmark\end{aligned}$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Producto por escalar</span><p>$$\alpha a-2\alpha b+3\alpha c=\alpha(a-2b+3c)=0\ \checkmark$$</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es subespacio de $M_{2\times2}(\mathbb{R})$</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 2 -->
+<section class="slide" id="tp2a" data-group="tp" data-sec="Ejercicio 2 · Combinación lineal" data-title="2(a) v = (1, 3)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 2(a)</span><span class="src">Teoría 4.3</span></p>
+  <h2>¿Es $v$ combinación lineal de $A$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$v=(1,3),\qquad A=\{(7,-1),\;(2,-5)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos</span><div class="math">$$(1,3)=\alpha(7,-1)+\beta(2,-5)\;\Rightarrow\;\begin{cases}7\alpha+2\beta=1\\-\alpha-5\beta=3\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos de la segunda</span><p>$\alpha=-3-5\beta$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos en la primera</span><p>$$7(-3-5\beta)+2\beta=1\Rightarrow-21-33\beta=1\Rightarrow\beta=-\tfrac{2}{3}$$ Luego $\alpha=-3+\tfrac{10}{3}=\tfrac13$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Verificamos</span><p>$$\tfrac13(7,-1)-\tfrac23(2,-5)=\left(\tfrac{7-4}{3},\tfrac{-1+10}{3}\right)=(1,3)\ \checkmark$$</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es C.L.: $v=\tfrac13(7,-1)-\tfrac23(2,-5)$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp2b" data-group="tp" data-sec="Ejercicio 2 · Combinación lineal" data-title="2(b) v = (−1, 1, 0)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 2(b)</span><span class="src">Teoría 4.3</span></p>
+  <h2>¿Es $v$ combinación lineal de $A$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$v=(-1,1,0),\qquad A=\{(1,1,0),\;(-1,2,1),\;(2,-1,-1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos</span><div class="math">$$\begin{cases}\alpha-\beta+2\gamma=-1\\\alpha+2\beta-\gamma=1\\\beta-\gamma=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">De la tercera</span><p>$\beta=\gamma$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Reemplazamos en las dos primeras</span><p>Primera: $\alpha-\gamma+2\gamma=\alpha+\gamma=-1$.<br>Segunda: $\alpha+2\gamma-\gamma=\alpha+\gamma=1$.</p><p>La misma expresión no puede valer $-1$ y $1$ a la vez: contradicción.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es combinación lineal</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp2c" data-group="tp" data-sec="Ejercicio 2 · Combinación lineal" data-title="2(c) matriz B" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 2(c)</span><span class="src">Teoría 4.3</span></p>
+  <h2>¿Es $B$ combinación lineal de $A$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$B=\begin{pmatrix}1&-3\\1&1\end{pmatrix},\quad A=\left\{\begin{pmatrix}1&3\\2&-2\end{pmatrix},\begin{pmatrix}3&2\\2&4\end{pmatrix},\begin{pmatrix}4&1\\3&2\end{pmatrix},\begin{pmatrix}3&0\\1&-2\end{pmatrix}\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Sistema (una ecuación por entrada)</span><div class="math">$$\begin{cases}E_1:\;\alpha+3\beta+4\gamma+3\delta=1\\E_2:\;3\alpha+2\beta+\gamma=-3\\E_3:\;2\alpha+2\beta+3\gamma+\delta=1\\E_4:\;-2\alpha+4\beta+2\gamma-2\delta=1\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Eliminamos $\alpha$ usando $E_1$</span><div class="math">$$\begin{aligned}E_2-3E_1:&\;\;7\beta+11\gamma+9\delta=6\\E_3-2E_1:&\;\;4\beta+5\gamma+5\delta=1\\E_4+2E_1:&\;\;10\beta+10\gamma+4\delta=3\end{aligned}$$</div><p class="muted small">(En las dos primeras multiplicamos todo por $-1$ para dejar los coeficientes positivos.)</p></div></li>
+    <li class="step"><div class="body"><span class="st">Eliminamos $\beta$</span><p>$$4(7\beta+11\gamma+9\delta)-7(4\beta+5\gamma+5\delta)=24-7\Rightarrow 9\gamma+\delta=17$$<br>$$10(4\beta+5\gamma+5\delta)-4(10\beta+10\gamma+4\delta)=10-12\Rightarrow 5\gamma+17\delta=-1$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Resolvemos el sistema de 2×2</span><p>$$\delta=17-9\gamma\Rightarrow5\gamma+17(17-9\gamma)=-1\Rightarrow-148\gamma=-290\Rightarrow\gamma=\tfrac{145}{74}$$ Luego $\delta=17-9\cdot\tfrac{145}{74}=-\tfrac{47}{74}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Volvemos hacia atrás</span><p>De $4\beta+5\gamma+5\delta=1$: $\beta=-\tfrac{52}{37}$. De $E_1$: $\alpha=-\tfrac{53}{74}$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es C.L.</span><div class="math">$$B=-\tfrac{53}{74}A_1-\tfrac{52}{37}A_2+\tfrac{145}{74}A_3-\tfrac{47}{74}A_4$$</div><p class="muted small">Otra forma de verlo: el determinante del sistema es $74\neq0$, así que las 4 matrices son base de $M_2$ y cualquier matriz es C.L. de ellas.</p></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 3 -->
+<section class="slide" id="tp3" data-group="tp" data-sec="Ejercicio 3 · Valor de k" data-title="3 · v = (1, −4, k)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 3</span><span class="src">Teoría 4.3</span></p>
+  <h2>¿Para qué $k$ es $v$ combinación lineal de $u$ y $w$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$v=(1,-4,k),\qquad u=(2,0,-1),\qquad w=(5,-1,-1)$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Planteamos</span><div class="math">$$(1,-4,k)=\alpha(2,0,-1)+\beta(5,-1,-1)\;\Rightarrow\;\begin{cases}2\alpha+5\beta=1\\-\beta=-4\\-\alpha-\beta=k\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">De la segunda</span><p>$\beta=4$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">De la primera</span><p>$2\alpha+20=1\Rightarrow\alpha=-\tfrac{19}{2}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">La tercera nos da $k$</span><p>$k=-\alpha-\beta=\tfrac{19}{2}-4=\tfrac{11}{2}$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$k=\tfrac{11}{2}$</span><p class="muted small">Con ese valor: $v=-\tfrac{19}{2}u+4w$.</p></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 4 -->
+<section class="slide" id="tp4a" data-group="tp" data-sec="Ejercicio 4 · L.I. o L.D." data-title="4(a) en ℝ²" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 4(a)</span><span class="src">Teoría 4.4</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A_1=\{(1,-2),\;(1,-3)\}\subset\mathbb{R}^2$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos a cero</span><div class="math">$$\alpha(1,-2)+\beta(1,-3)=(0,0)\;\Rightarrow\;\begin{cases}\alpha+\beta=0\\-2\alpha-3\beta=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Resolvemos</span><p>$$\alpha=-\beta\Rightarrow2\beta-3\beta=-\beta=0\Rightarrow\beta=0,\ \alpha=0$$</p><p class="muted small">Con determinante: $\begin{vmatrix}1&1\\-2&-3\end{vmatrix}=-3+2=-1\neq0$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">L.I.</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp4b" data-group="tp" data-sec="Ejercicio 4 · L.I. o L.D." data-title="4(b) en ℝ⁴" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 4(b)</span><span class="src">Teoría 4.4</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A_2=\{(1,1,0,1),\;(0,1,0,1),\;(0,0,1,1),\;(1,1,1,1)\}\subset\mathbb{R}^4$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos a cero</span><div class="math">$$\begin{cases}\alpha+\delta=0\\\alpha+\beta+\delta=0\\\gamma+\delta=0\\\alpha+\beta+\gamma+\delta=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Restamos la primera de la segunda</span><p>$\beta=0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Cuarta ecuación</span><p>$$(\alpha+\delta)+\beta+\gamma=0+0+\gamma=0\Rightarrow\gamma=0$$ Entonces $\delta=0$ (tercera) y $\alpha=0$ (primera).</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">L.I.</span><p class="muted small">Como son 4 vectores L.I. en $\mathbb{R}^4$, además son base.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp4c" data-group="tp" data-sec="Ejercicio 4 · L.I. o L.D." data-title="4(c) en P₃" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 4(c)</span><span class="src">Teoría 4.4</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A_3=\{t^3+2t+1,\;t-1,\;t^3-3t-2\}\subset P_3(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos al polinomio cero y agrupamos</span><div class="math">$$\begin{cases}t^3: & \alpha+\gamma=0\\t^2: & 0=0\\t: & 2\alpha+\beta-3\gamma=0\\1: & \alpha-\beta-2\gamma=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos $\gamma=-\alpha$</span><p>En $t$: $2\alpha+\beta+3\alpha=0\Rightarrow\beta=-5\alpha$.<br>En $1$: $$\alpha+5\alpha+2\alpha=8\alpha=0\Rightarrow\alpha=0$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Entonces</span><p>$\alpha=\beta=\gamma=0$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">L.I.</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp4d" data-group="tp" data-sec="Ejercicio 4 · L.I. o L.D." data-title="4(d) en M₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 4(d)</span><span class="src">Teoría 4.4</span></p>
+  <h2>¿L.I. o L.D.?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A_4=\left\{\begin{pmatrix}1&1\\0&2\end{pmatrix},\begin{pmatrix}1&-3\\1&1\end{pmatrix},\begin{pmatrix}0&1\\2&2\end{pmatrix}\right\}\subset M_2(\mathbb{R})$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos a la matriz nula</span><div class="math">$$\begin{cases}\alpha+\beta=0\\\alpha-3\beta+\gamma=0\\\beta+2\gamma=0\\2\alpha+\beta+2\gamma=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$\beta=-2\gamma$ y $\alpha=-\beta=2\gamma$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segunda ecuación</span><p>$2\gamma+6\gamma+\gamma=9\gamma=0\Rightarrow\gamma=0$, y entonces $\alpha=\beta=0$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">L.I.</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicios 5 y 6 -->
+<section class="slide" id="tp5" data-group="tp" data-sec="Ejercicios 5 y 6 · Valor de k" data-title="5 · k para que sean L.D." data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 5</span><span class="src">Teoría 4.4</span></p>
+  <h2>¿Para qué $k$ son L.D.?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$(1,4,k),\qquad(2,k,0),\qquad(-1,2,1)$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Idea</span><p>3 vectores en $\mathbb{R}^3$ son L.D. exactamente cuando su determinante vale $0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Calculamos el determinante (por la primera fila)</span><div class="math">$$\begin{vmatrix}1&4&k\\2&k&0\\-1&2&1\end{vmatrix}=1(k-0)-4(2-0)+k(4+k)=k^2+5k-8$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Igualamos a cero</span><div class="math">$$k^2+5k-8=0\;\Rightarrow\;k=\frac{-5\pm\sqrt{25+32}}{2}=\frac{-5\pm\sqrt{57}}{2}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$k=\dfrac{-5+\sqrt{57}}{2}\approx1{,}27\;$ o $\;k=\dfrac{-5-\sqrt{57}}{2}\approx-6{,}27$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp6" data-group="tp" data-sec="Ejercicios 5 y 6 · Valor de k" data-title="6 · k para que sean L.I." data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 6</span><span class="src">Teoría 4.4</span></p>
+  <h2>¿Para qué $k$ son L.I.?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$(-1,4,3),\qquad(2,k,1),\qquad(-1,5,-3)$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Idea</span><p>Son L.I. cuando el determinante es <b>distinto</b> de $0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante</span><div class="math">$$\begin{vmatrix}-1&4&3\\2&k&1\\-1&5&-3\end{vmatrix}=-1(-3k-5)-4(-6+1)+3(10+k)$$</div><div class="math">$$=3k+5+20+30+3k=6k+55$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Pedimos que no sea cero</span><p>$6k+55\neq0\iff k\neq-\tfrac{55}{6}$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Son L.I. para todo $k\neq-\tfrac{55}{6}$</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 7 -->
+<section class="slide" id="tp7a" data-group="tp" data-sec="Ejercicio 7 · Generadores" data-title="7(a) en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 7(a)</span><span class="src">Teoría 4.5</span></p>
+  <h2>¿$A$ genera $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\{(-3,0,2),\;(1,-2,4),\;(0,2,-1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Idea</span><p>Son 3 vectores en $\mathbb{R}^3$: generan si el determinante es distinto de 0.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante</span><div class="math">$$\begin{vmatrix}-3&0&2\\1&-2&4\\0&2&-1\end{vmatrix}=-3(2-8)-0+2(2-0)=18+4=22$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí genera $\mathbb{R}^3$</span><p class="muted small">Para cualquier $(x,y,z)$ el sistema tiene solución única.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp7b" data-group="tp" data-sec="Ejercicio 7 · Generadores" data-title="7(b) en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 7(b)</span><span class="src">Teoría 4.5</span></p>
+  <h2>¿$B$ genera $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$B=\{(4,0,1),\;(0,1,0),\;(0,0,1),\;(1,1,-2)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Miramos los tres primeros</span><div class="math">$$\begin{vmatrix}4&0&0\\0&1&0\\1&0&1\end{vmatrix}=4\neq0$$</div><p>Ya esos tres generan $\mathbb{R}^3$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Concretamente</span><p>Para cualquier $(x,y,z)$:</p><div class="math">$$(x,y,z)=\tfrac x4(4,0,1)+y(0,1,0)+\left(z-\tfrac x4\right)(0,0,1)+0\cdot(1,1,-2)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí genera $\mathbb{R}^3$</span><p class="muted small">Pero no es base: 4 vectores en $\mathbb{R}^3$ son L.D.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp7c" data-group="tp" data-sec="Ejercicio 7 · Generadores" data-title="7(c) en P₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 7(c)</span><span class="src">Teoría 4.5</span></p>
+  <h2>¿$C$ genera $P_2(\mathbb{R})$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$C=\{2t^2+3,\;t+4\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Polinomio genérico</span><div class="math">$$\alpha(2t^2+3)+\beta(t+4)=xt^2+yt+z\;\Rightarrow\;\begin{cases}2\alpha=x\\\beta=y\\3\alpha+4\beta=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Aparece una condición</span><p>$\alpha=\tfrac x2$, $\beta=y$ y entonces debe cumplirse $z=\tfrac{3x}{2}+4y$, es decir, $3x+8y-2z=0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Un polinomio que no se puede armar</span><p>$t^2$ ($x=1,\ y=0,\ z=0$): $3\neq0$.</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No genera $P_2(\mathbb{R})$</span><p class="muted small">2 polinomios no alcanzan: $\dim P_2(\mathbb{R})=3$.</p></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 8 -->
+<section class="slide" id="tp8a" data-group="tp" data-sec="Ejercicio 8 · Bases" data-title="8(a) en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 8(a)</span><span class="src">Teoría 4.6</span></p>
+  <h2>¿$A$ es base de $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\{(-2,4,1),\;(1,2,4),\;(0,1,0)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Contamos</span><p>3 vectores en $\mathbb{R}^3$: basta ver si el determinante es distinto de 0.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Determinante (desarrollando por la tercera fila)</span><div class="math">$$\begin{vmatrix}-2&4&1\\1&2&4\\0&1&0\end{vmatrix}=-1\cdot\begin{vmatrix}-2&1\\1&4\end{vmatrix}=-1\,(-8-1)=9$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es base de $\mathbb{R}^3$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp8b" data-group="tp" data-sec="Ejercicio 8 · Bases" data-title="8(b) cuatro vectores en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 8(b)</span><span class="src">Teoría 4.6</span></p>
+  <h2>¿$B$ es base de $\mathbb{R}^3$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$B=\{(-1,0,5),\;(1,2,-3),\;(1,-1,2),\;(1,0,1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Contamos</span><p>Son 4 vectores y $\dim\mathbb{R}^3=3$. Hay uno que sobra: la familia es L.D.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Una relación que lo muestra</span><div class="math">$$-(-1,0,5)-3(1,2,-3)-6(1,-1,2)+8(1,0,1)=(0,0,0)$$</div></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">No es base</span><p class="muted small">Sí genera $\mathbb{R}^3$, pero no es L.I.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp8c" data-group="tp" data-sec="Ejercicio 8 · Bases" data-title="8(c) en P₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 8(c)</span><span class="src">Teoría 4.6</span></p>
+  <h2>¿$C$ es base de $P_2(\mathbb{R})$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$C=\{t^2+2t,\;t-3,\;t+1\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Coeficientes como columnas ($t^2$, $t$, $1$)</span><div class="math">$$\begin{vmatrix}1&0&0\\2&1&1\\0&-3&1\end{vmatrix}=1\cdot(1\cdot1-1\cdot(-3))=4$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Interpretación</span><p>$\det\neq0$ y son 3 polinomios en un espacio de dimensión 3.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es base de $P_2(\mathbb{R})$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp8d" data-group="tp" data-sec="Ejercicio 8 · Bases" data-title="8(d) en M₂ₓ₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 8(d)</span><span class="src">Teoría 4.6</span></p>
+  <h2>¿$E$ es base de $M_{2\times2}(\mathbb{R})$?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$E=\left\{\begin{pmatrix}1&1\\1&1\end{pmatrix},\begin{pmatrix}1&0\\1&0\end{pmatrix},\begin{pmatrix}3&2\\0&1\end{pmatrix},\begin{pmatrix}1&0\\0&0\end{pmatrix}\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Igualamos a la matriz nula</span><div class="math">$$\begin{cases}\alpha+\beta+3\gamma+\delta=0\\\alpha+2\gamma=0\\\alpha+\beta=0\\\alpha+\gamma=0\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comparamos la segunda y la cuarta</span><p>Restando: $\gamma=0$. Luego $\alpha=0$, $\beta=0$ y, de la primera, $\delta=0$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Conclusión</span><p>Son L.I. y son 4 matrices en un espacio de dimensión 4.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Sí es base de $M_{2\times2}(\mathbb{R})$</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 9 -->
+<section class="slide" id="tp9a" data-group="tp" data-sec="Ejercicio 9 · Base y dimensión" data-title="9(a) a − b + 3c = 0" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 9(a)</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $W_1$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_1=\{(a,b,c)\,/\,a-b+3c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$a=b-3c$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$(b-3c,\;b,\;c)=b(1,1,0)+c(-3,0,1)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos</span><p>$(1,1,0)$: $1-1+0=0$ ✓ · $(-3,0,1)$: $-3-0+3=0$ ✓. No son múltiplos: L.I.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(1,1,0),(-3,0,1)\}$ · $\dim W_1=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp9b" data-group="tp" data-sec="Ejercicio 9 · Base y dimensión" data-title="9(b) 2a − b + 3c = 0" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 9(b)</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $W_3$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_3=\{at^2+bt+c\,/\,2a-b+3c=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$b=2a+3c$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$at^2+(2a+3c)t+c=a(t^2+2t)+c(3t+1)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos</span><p>$t^2+2t$: $2-2+0=0$ ✓ · $3t+1$: $0-3+3=0$ ✓</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{t^2+2t,\;3t+1\}$ · $\dim W_3=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp9c" data-group="tp" data-sec="Ejercicio 9 · Base y dimensión" data-title="9(c) matrices" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 9(c)</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $W_4$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_4=\left\{\begin{pmatrix}a&b\\c&d\end{pmatrix}\,/\,-a+2b=0,\;\;c+3d=0\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$a=2b$ y $c=-3d$. Quedan libres $b$ y $d$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$\begin{pmatrix}2b&b\\-3d&d\end{pmatrix}=b\begin{pmatrix}2&1\\0&0\end{pmatrix}+d\begin{pmatrix}0&0\\-3&1\end{pmatrix}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base: las 2 matrices de arriba · $\dim W_4=2$</span><p class="muted small">4 variables − 2 ecuaciones = 2.</p></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 10 -->
+<section class="slide" id="tp10" data-group="tp" data-sec="Ejercicio 10 · BX = 3X" data-title="10 · U = {X / BX = 3X}" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 10</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $U$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$B=\begin{pmatrix}2&-1\\-1&2\end{pmatrix},\qquad U=\{X\in M_{2\times2}\,/\,BX=3X\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Tomamos $X$ genérica y multiplicamos</span><div class="math">$$X=\begin{pmatrix}a&b\\c&d\end{pmatrix},\qquad BX=\begin{pmatrix}2a-c&2b-d\\-a+2c&-b+2d\end{pmatrix}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Igualamos con $3X$</span><div class="math">$$\begin{cases}2a-c=3a\\2b-d=3b\\-a+2c=3c\\-b+2d=3d\end{cases}\;\Rightarrow\;\begin{cases}c=-a\\d=-b\\c=-a\\d=-b\end{cases}$$</div><p>Solo quedan dos condiciones distintas.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$X=\begin{pmatrix}a&b\\-a&-b\end{pmatrix}=a\begin{pmatrix}1&0\\-1&0\end{pmatrix}+b\begin{pmatrix}0&1\\0&-1\end{pmatrix}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base: las 2 matrices de arriba · $\dim U=2$</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 11 -->
+<section class="slide" id="tp11a" data-group="tp" data-sec="Ejercicio 11 · Subespacio generado" data-title="11(a) en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 11(a)</span><span class="src">Teoría 4.9</span></p>
+  <h2>Subespacio generado por $A$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\{(1,-1,1),\;(0,3,1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Vector genérico</span><div class="math">$$(x,y,z)=\alpha(1,-1,1)+\beta(0,3,1)\;\Rightarrow\;\begin{cases}\alpha=x\\-\alpha+3\beta=y\\\alpha+\beta=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$\alpha=x$ y $\beta=\dfrac{x+y}{3}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Tercera ecuación</span><p>$$x+\dfrac{x+y}{3}=z\Rightarrow 3x+x+y=3z\Rightarrow 4x+y-3z=0$$</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$W=\{(x,y,z)\,/\,4x+y-3z=0\}$</span><p>Base $\{(1,-1,1),(0,3,1)\}$ · $\dim W=2$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp11b" data-group="tp" data-sec="Ejercicio 11 · Subespacio generado" data-title="11(b) en P₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 11(b)</span><span class="src">Teoría 4.9</span></p>
+  <h2>Subespacio generado por $B$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$B=\{t^2-t-1,\;t^2-4t+1\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Polinomio genérico $xt^2+yt+z$</span><div class="math">$$\begin{cases}\alpha+\beta=x\\-\alpha-4\beta=y\\-\alpha+\beta=z\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Sumamos las dos primeras</span><p>$-3\beta=x+y\Rightarrow\beta=-\dfrac{x+y}{3}$, y $\alpha=x-\beta=\dfrac{4x+y}{3}$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Tercera ecuación</span><p>$$-\dfrac{4x+y}{3}-\dfrac{x+y}{3}=z\Rightarrow-(5x+2y)=3z\Rightarrow5x+2y+3z=0$$</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$$W=\{xt^2+yt+z\,/\,5x+2y+3z=0\}$$</span><p>Base $B$ · $\dim W=2$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp11c" data-group="tp" data-sec="Ejercicio 11 · Subespacio generado" data-title="11(c) en M₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 11(c)</span><span class="src">Teoría 4.9</span></p>
+  <h2>Subespacio generado por $C$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$C=\left\{\begin{pmatrix}1&-2\\0&1\end{pmatrix},\begin{pmatrix}1&0\\-4&1\end{pmatrix},\begin{pmatrix}1&2\\0&1\end{pmatrix}\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Matriz genérica $\begin{pmatrix}x&y\\z&w\end{pmatrix}$</span><div class="math">$$\begin{cases}\alpha+\beta+\gamma=x\\-2\alpha+2\gamma=y\\-4\beta=z\\\alpha+\beta+\gamma=w\end{cases}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">La primera y la cuarta tienen el mismo lado izquierdo</span><p>Entonces debe ser $x=w$. Esa es la condición.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Las demás siempre se pueden resolver</span><p>$\beta=-\tfrac z4$; con $\alpha+\gamma=x+\tfrac z4$ y $\gamma-\alpha=\tfrac y2$ se obtienen $\alpha$ y $\gamma$ de forma única. Por eso las 3 matrices son L.I.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$W=\left\{\begin{pmatrix}x&y\\z&w\end{pmatrix}\,/\,x=w\right\}$</span><p>Base $C$ · $\dim W=3$.</p></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 12 -->
+<section class="slide" id="tp12a" data-group="tp" data-sec="Ejercicio 12 · W₁, W₂ y W₁ ∩ W₂" data-title="12 · W₁" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 12 · parte 1</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $W_1$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_1=\{(x,y,z)\in\mathbb{R}^3\,/\,x+y+z=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Despejamos</span><p>$x=-y-z$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos y separamos</span><div class="math">$$(-y-z,\;y,\;z)=y(-1,1,0)+z(-1,0,1)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(-1,1,0),(-1,0,1)\}$ · $\dim W_1=2$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp12b" data-group="tp" data-sec="Ejercicio 12 · W₁, W₂ y W₁ ∩ W₂" data-title="12 · W₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 12 · parte 2</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $W_2$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_2=\{(x,y,z)\in\mathbb{R}^3\,/\,3x+y+5z=0\ \text{ y }\ x+2z=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">De la segunda</span><p>$x=-2z$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">En la primera</span><p>$3(-2z)+y+5z=0\Rightarrow y=z$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Sustituimos</span><div class="math">$$(-2z,\;z,\;z)=z(-2,1,1)$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(-2,1,1)\}$ · $\dim W_2=1$</span><p class="muted small">Es una recta que pasa por el origen.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp12c" data-group="tp" data-sec="Ejercicio 12 · W₁, W₂ y W₁ ∩ W₂" data-title="12 · W₁ ∩ W₂" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 12 · parte 3</span><span class="src">Teoría 4.8</span></p>
+  <h2>Base y dimensión de $W_3=W_1\cap W_2$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$W_3=\{(x,y,z)\,/\,x+y+z=0,\;\;3x+y+5z=0,\;\;x+2z=0\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Usamos lo que ya sabemos de $W_2$</span><p>Las dos últimas ecuaciones dan $(x,y,z)=z(-2,1,1)$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Probamos en la primera ecuación</span><p>$-2z+z+z=0$ ✓. Se cumple siempre.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Interpretación</span><p>Toda la recta $W_2$ está dentro del plano $W_1$; por eso $W_1\cap W_2=W_2$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base $\{(-2,1,1)\}$ · $\dim(W_1\cap W_2)=1$</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 13 -->
+<section class="slide" id="tp13a" data-group="tp" data-sec="Ejercicio 13 · Distancias" data-title="13(a) en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 13(a)</span><span class="src">Teoría 5.2</span></p>
+  <h2>Distancia entre $u$ y $v$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$u=(-1,8,-4),\qquad v=(2,3,2)$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$u-v=(-3,\;5,\;-6)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Norma</span><div class="math">$$|u-v|=\sqrt{9+25+36}=\sqrt{70}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$d(u,v)=\sqrt{70}\approx8{,}367$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp13b" data-group="tp" data-sec="Ejercicio 13 · Distancias" data-title="13(b) en ℝ⁴" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 13(b)</span><span class="src">Teoría 5.2</span></p>
+  <h2>Distancia entre $u$ y $v$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$u=(2,-3,4,2),\qquad v=(-4,7,-5,1)$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$u-v=(6,\;-10,\;9,\;1)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Norma</span><div class="math">$$|u-v|=\sqrt{36+100+81+1}=\sqrt{218}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$d(u,v)=\sqrt{218}\approx14{,}765$</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp13c" data-group="tp" data-sec="Ejercicio 13 · Distancias" data-title="13(c) polinomios" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 13(c)</span><span class="src">Teoría 5.1 y 5.2</span></p>
+  <h2>Distancia entre $p$ y $q$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$p(t)=2t^2+2,\qquad q(t)=t^2+3t-1$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$p-q=t^2-3t+3$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Elevamos al cuadrado</span><div class="math">$$(t^2-3t+3)^2=t^4-6t^3+15t^2-18t+9$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Integramos de 0 a 1 (P.I. estándar de la diapositiva)</span><div class="math">$$\int_0^1(\dots)\,dt=\frac15-\frac64+\frac{15}{3}-\frac{18}{2}+9=\frac15-\frac32+5-9+9=\frac{37}{10}$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$d(p,q)=\sqrt{\tfrac{37}{10}}\approx1{,}924$</span><p class="muted small">Si en clase se usa el producto de coeficientes, $\langle p,q\rangle=a_2b_2+a_1b_1+a_0b_0$, el resultado sería $\sqrt{1+9+9}=\sqrt{19}$.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp13d" data-group="tp" data-sec="Ejercicio 13 · Distancias" data-title="13(d) matrices" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 13(d)</span><span class="src">Teoría 5.2</span></p>
+  <h2>Distancia entre $A$ y $B$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\begin{pmatrix}1&3\\-2&7\end{pmatrix},\qquad B=\begin{pmatrix}-1&4\\5&2\end{pmatrix}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$A-B=\begin{pmatrix}2&-1\\-7&5\end{pmatrix}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">$\operatorname{tr}\big((A-B)^t(A-B)\big)$ = suma de cuadrados de las entradas</span><div class="math">$$4+1+49+25=79$$</div></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">$d(A,B)=\sqrt{79}\approx8{,}888$</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 14 -->
+<section class="slide" id="tp14a" data-group="tp" data-sec="Ejercicio 14 · Ortogonal / ortonormal" data-title="14(a)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 14(a)</span><span class="src">Teoría 5.3</span></p>
+  <h2>¿Ortogonal? ¿Ortonormal?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\left\{\left(\tfrac{1}{\sqrt2},0,\tfrac{1}{\sqrt2}\right),\;\left(-\tfrac{1}{\sqrt2},0,\tfrac{1}{\sqrt2}\right),\;(0,1,0)\right\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Productos entre parejas</span><div class="math">$$\begin{aligned}\langle a_1,a_2\rangle&=-\tfrac12+0+\tfrac12=0\\\langle a_1,a_3\rangle&=0\\\langle a_2,a_3\rangle&=0\end{aligned}$$</div><p>Es ortogonal.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Normas</span><p>$|a_1|=|a_2|=\sqrt{\tfrac12+\tfrac12}=1$ y $|a_3|=1$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Ortogonal y ortonormal</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp14b" data-group="tp" data-sec="Ejercicio 14 · Ortogonal / ortonormal" data-title="14(b)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 14(b)</span><span class="src">Teoría 5.3</span></p>
+  <h2>¿Ortogonal? ¿Ortonormal?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$B=\{(0,1,-1),\;(0,1,1),\;(2,0,0)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Productos entre parejas</span><div class="math">$$\langle b_1,b_2\rangle=0+1-1=0,\quad\langle b_1,b_3\rangle=0,\quad\langle b_2,b_3\rangle=0$$</div><p>Es ortogonal.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Normas</span><p>$|b_1|=\sqrt2$, $|b_2|=\sqrt2$, $|b_3|=2$. Ninguna vale 1.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Ortogonal, pero no ortonormal</span><p class="muted small">Normalizando se obtiene $$\left\{\left(0,\tfrac1{\sqrt2},-\tfrac1{\sqrt2}\right),\left(0,\tfrac1{\sqrt2},\tfrac1{\sqrt2}\right),(1,0,0)\right\}$$, que sí es ortonormal.</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp14c" data-group="tp" data-sec="Ejercicio 14 · Ortogonal / ortonormal" data-title="14(c)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 14(c)</span><span class="src">Teoría 5.3</span></p>
+  <h2>¿Ortogonal? ¿Ortonormal?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$C=\{(1,1,-1),\;(6,1,1),\;(-2,0,-1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primera pareja</span><div class="math">$$\langle(1,1,-1),(6,1,1)\rangle=6+1-1=6\neq0$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Basta con una pareja que falle</span><p>Si un par no es ortogonal, el conjunto no es ortogonal (y menos ortonormal).</p></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">Ni ortogonal ni ortonormal</span></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp14d" data-group="tp" data-sec="Ejercicio 14 · Ortogonal / ortonormal" data-title="14(d)" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 14(d)</span><span class="src">Teoría 5.3</span></p>
+  <h2>¿Ortogonal? ¿Ortonormal?</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$D=\{(0,1,1),\;(2,0,1),\;(1,-1,0)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primera pareja</span><div class="math">$$\langle(0,1,1),(2,0,1)\rangle=0+0+1=1\neq0$$</div></div></li>
+    <li class="step final neg"><div class="body"><span class="verdict no">Ni ortogonal ni ortonormal</span></div></li>
+  </ol>
+</section>
+
+<!-- Ejercicio 15 -->
+<section class="slide" id="tp15a" data-group="tp" data-sec="Ejercicio 15 · Gram–Schmidt" data-title="15(a) en ℝ²" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 15(a)</span><span class="src">Teoría 5.4</span></p>
+  <h2>Ortonormalizar $A$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\{(2,-3),\;(-4,1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><p>$z_1=(2,-3)$, $\;|z_1|^2=4+9=13$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><p>$\langle w_2,z_1\rangle=-8-3=-11$.</p><div class="math">$$z_2=(-4,1)+\frac{11}{13}(2,-3)=\left(-\frac{30}{13},-\frac{20}{13}\right)=\frac{10}{13}(-3,-2)$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos</span><p>$$\langle(2,-3),(-3,-2)\rangle=-6+6=0\ \checkmark$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Normalizamos</span><p>$|(2,-3)|=\sqrt{13}$ y $|(-3,-2)|=\sqrt{13}$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\left(\tfrac{2}{\sqrt{13}},-\tfrac{3}{\sqrt{13}}\right),\;\left(-\tfrac{3}{\sqrt{13}},-\tfrac{2}{\sqrt{13}}\right)\right\}$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp15b" data-group="tp" data-sec="Ejercicio 15 · Gram–Schmidt" data-title="15(b) en ℝ³" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 15(b)</span><span class="src">Teoría 5.4</span></p>
+  <h2>Ortonormalizar $C$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$C=\{(1,-2,-1),\;(2,0,1),\;(4,-1,1)\}$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><p>$z_1=(1,-2,-1)$, $\;|z_1|^2=1+4+1=6$.</p></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><p>$\langle w_2,z_1\rangle=2+0-1=1$.</p><div class="math">$$z_2=(2,0,1)-\frac16(1,-2,-1)=\left(\tfrac{11}{6},\tfrac{2}{6},\tfrac{7}{6}\right)=\tfrac16(11,2,7)$$</div><p>Usamos la dirección $(11,2,7)$, con $$|(11,2,7)|^2=121+4+49=174$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Productos para el tercero</span><p>$\langle w_3,z_1\rangle=4+2-1=5$ y $$\langle w_3,(11,2,7)\rangle=44-2+7=49$$</p></div></li>
+    <li class="step"><div class="body"><span class="st">Tercer vector</span><div class="math">$$\begin{aligned}z_3&=(4,-1,1)-\frac56(1,-2,-1)-\frac{49}{174}(11,2,7)\\&=\left(\tfrac{2}{29},\tfrac{3}{29},-\tfrac{4}{29}\right)=\tfrac{1}{29}(2,3,-4)\end{aligned}$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Comprobamos</span><p>$(1,-2,-1)\cdot(11,2,7)=0$, $\;(1,-2,-1)\cdot(2,3,-4)=0$, $\;(11,2,7)\cdot(2,3,-4)=0$ ✓</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\tfrac{1}{\sqrt6}(1,-2,-1),\;\tfrac{1}{\sqrt{174}}(11,2,7),\;\tfrac{1}{\sqrt{29}}(2,3,-4)\right\}$$</div></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="tp15c" data-group="tp" data-sec="Ejercicio 15 · Gram–Schmidt" data-title="15(c) polinomios" data-kind="obs">
+  <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 15(c)</span><span class="src">Teoría 5.4</span></p>
+  <h2>Ortonormalizar $A$ en $P_1(\mathbb{R})$</h2>
+  <div class="box task"><span class="label">Enunciado</span><div class="math">$$A=\{2t,\;t+1\},\qquad\langle p,q\rangle=\int_0^1p\,q\,dt$$</div></div>
+  <ol class="steps">
+    <li class="step"><div class="body"><span class="st">Primer vector</span><div class="math">$$z_1=2t,\qquad|z_1|^2=\int_0^14t^2\,dt=\tfrac43$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Producto para el segundo</span><div class="math">$$\langle t+1,\,2t\rangle=\int_0^1(2t^2+2t)\,dt=\tfrac23+1=\tfrac53$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Segundo vector</span><div class="math">$$z_2=(t+1)-\frac{5/3}{4/3}\,(2t)=t+1-\tfrac52t=1-\tfrac32t$$</div></div></li>
+    <li class="step"><div class="body"><span class="st">Normas</span><p>$|z_1|=\tfrac{2}{\sqrt3}$ y $|z_2|^2=\int_0^1\left(1-\tfrac32t\right)^2dt=\tfrac14$, así que $|z_2|=\tfrac12$.</p></div></li>
+    <li class="step final"><div class="body"><span class="verdict yes">Base ortonormal</span><div class="math">$$\left\{\frac{2t}{2/\sqrt3},\;\frac{1-\frac32t}{1/2}\right\}=\left\{\sqrt3\,t,\;\;2-3t\right\}$$</div><p class="muted small">Comprobación: $$\int_0^1\sqrt3\,t\,(2-3t)\,dt=\sqrt3\,(1-1)=0$$ ✓</p></div></li>
+  </ol>
+</section>
+
+<section class="slide" id="fin" data-group="tp" data-sec="Cierre" data-title="Fin" data-kind="def">
+  <p class="eyebrow"><span class="kind k-def">Cierre</span></p>
+  <h1>¡Listo para la prueba!</h1>
+  <p class="lead">Repasa las recetas de cada tema y vuelve a los ejercicios donde dudaste. Recuerda: tercera prueba anunciada el miércoles 14 de octubre.</p>
+  <div class="entry">
+    <button type="button" data-go="t4-resumen"><span class="num">Repaso</span><span class="ttl">Recetas del Tema 4</span></button>
+    <button type="button" data-go="t5-resumen"><span class="num">Repaso</span><span class="ttl">Recetas del Tema 5</span></button>
+    <a href="mapa-conceptual.html"><span class="num">Esquema</span><span class="ttl">Mapa conceptual</span></a>
+    <button type="button" data-go="inicio"><span class="num">Volver</span><span class="ttl">Portada</span></button>
+  </div>
+</section>
+
+    </article>
+  </main>
+
+  <footer class="nav">
+    <button class="icon-btn" id="btn-prev" type="button" aria-label="Diapositiva anterior">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="hide-sm">Anterior</span>
+    </button>
+    <div class="grow">
+      <div class="count" id="count"></div>
+      <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    </div>
+    <button class="btn-step" id="btn-step" type="button">Ver paso</button>
+    <button class="icon-btn" id="btn-next" type="button" aria-label="Diapositiva siguiente">
+      <span class="hide-sm">Siguiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Contenido" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Contenido</h2>
+    <button class="icon-btn" id="btn-close" type="button" aria-label="Cerrar el menú">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="search"><input id="buscar" type="search" placeholder="Buscar: base, Gram, ejercicio 9…" autocomplete="off" aria-label="Buscar en el contenido"></div>
+  <nav class="toc" id="toc"></nav>
+  <div class="drawer-foot">
+    <label class="switch" for="ver-todo"><span>Mostrar todos los pasos de una vez</span><input type="checkbox" id="ver-todo"></label>
+    <a href="mapa-conceptual.html"><span>Mapa conceptual</span><span aria-hidden="true">→</span></a>
+  </div>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var byId = {};
+  // El id pasa a data-id para que el navegador no desplace la página al cambiar el #enlace.
+  slides.forEach(function (s, i) { s.dataset.id = s.id; s.removeAttribute('id'); byId[s.dataset.id] = i; });
+
+  var GROUPS = { inicio: 'Inicio', t4: 'Tema 4 · Espacios vectoriales', t5: 'Tema 5 · Producto interno', tp: 'Práctica · TP N° 2' };
+  var SHORT = { inicio: 'Inicio', t4: 'Tema 4', t5: 'Tema 5', tp: 'Práctica' };
+  var KCOLOR = { def: 'var(--def)', thm: 'var(--thm)', ex: 'var(--ex)', obs: 'var(--obs)' };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var stage = $('stage'), crumb = $('crumb'), count = $('count'), bar = $('bar');
+  var btnStep = $('btn-step'), toc = $('toc'), buscar = $('buscar'), verTodo = $('ver-todo');
+
+  var store = {
+    get: function (k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
+  };
+
+  /* ---------- preferencias ---------- */
+  var root = document.documentElement;
+  var savedTheme = store.get('al-theme');
+  if (savedTheme === 'light' || savedTheme === 'dark') root.setAttribute('data-theme', savedTheme);
+  var fs = parseFloat(store.get('al-fs')) || 1;
+  function applyFs() { root.style.setProperty('--fs', fs.toFixed(2)); }
+  applyFs();
+  $('btn-fs-up').addEventListener('click', function () { fs = Math.min(1.3, fs + 0.1); applyFs(); store.set('al-fs', fs); });
+  $('btn-fs-down').addEventListener('click', function () { fs = Math.max(0.85, fs - 0.1); applyFs(); store.set('al-fs', fs); });
+  $('btn-theme').addEventListener('click', function () {
+    var attr = root.getAttribute('data-theme');
+    var dark = attr ? attr === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    store.set('al-theme', next);
+  });
+
+  /* ---------- pasos ---------- */
+  var showAll = store.get('al-showall') === '1';
+  verTodo.checked = showAll;
+  slides.forEach(function (s) {
+    s.hidden = true;
+    s._steps = Array.prototype.slice.call(s.querySelectorAll('ol.steps > li.step'));
+    s._shown = 0;
+    s._steps.forEach(function (li) {
+      var body = li.querySelector('.body');
+      if (body) { li.setAttribute('tabindex', '-1'); }
+    });
+  });
+  function applySteps(s) {
+    s._steps.forEach(function (li, i) {
+      var hide = !showAll && i >= s._shown;
+      li.classList.toggle('is-hidden', hide);
+      li.setAttribute('aria-hidden', hide ? 'true' : 'false');
+    });
+  }
+  function flash(li) {
+    li.classList.remove('just'); void li.offsetWidth; li.classList.add('just');
+  }
+  function remaining(s) { return showAll ? 0 : s._steps.length - s._shown; }
+  function updateStepBtn() {
+    var s = slides[cur];
+    var left = remaining(s);
+    if (left > 0) {
+      var isLast = s._shown === s._steps.length - 1 && s._steps[s._steps.length - 1].classList.contains('final');
+      btnStep.textContent = isLast ? 'Ver respuesta' : 'Ver paso ' + (s._shown + 1) + ' de ' + s._steps.length;
+      btnStep.hidden = false;
+    } else {
+      btnStep.hidden = true;
+    }
+  }
+  function nextStep() {
+    var s = slides[cur];
+    if (remaining(s) <= 0) return false;
+    s._shown++;
+    applySteps(s);
+    var li = s._steps[s._shown - 1];
+    flash(li);
+    fitMath(s);
+    try { li.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) { li.scrollIntoView(false); }
+    updateStepBtn();
+    return true;
+  }
+  $('sheet').addEventListener('click', function (e) {
+    var li = e.target.closest ? e.target.closest('li.step.is-hidden') : null;
+    if (li) {
+      var s = slides[cur];
+      s._shown = s._steps.indexOf(li) + 1;
+      applySteps(s); flash(li); updateStepBtn(); fitMath(s);
+      return;
+    }
+    var go = e.target.closest ? e.target.closest('[data-go]') : null;
+    if (go && byId[go.getAttribute('data-go')] !== undefined) goTo(byId[go.getAttribute('data-go')]);
+  });
+  btnStep.addEventListener('click', nextStep);
+  verTodo.addEventListener('change', function () {
+    showAll = verTodo.checked;
+    store.set('al-showall', showAll ? '1' : '0');
+    applySteps(slides[cur]); updateStepBtn(); fitMath(slides[cur]);
+  });
+
+  /* ---------- fórmulas (MathJax) ---------- */
+  // MathJax necesita que las composiciones vayan una detrás de otra.
+  var chain = Promise.resolve();
+  function typeset(s) {
+    if (s._typeset || !window.MathJax || !window.MathJax.typesetPromise) return chain;
+    s._typeset = true;
+    chain = chain.then(function () { return window.MathJax.typesetPromise([s]); })
+                 .catch(function () {});
+    return chain;
+  }
+  // En pantallas angostas, una fórmula en línea más ancha que su columna se puede desplazar.
+  function fitMath(s) {
+    (s._typeset ? chain : Promise.resolve()).then(function () {
+      Array.prototype.forEach.call(s.querySelectorAll('mjx-container:not([display])'), function (c) {
+        c.classList.remove('wide');
+        var host = c.parentElement && c.parentElement.closest('.body, .box, td, figcaption, .math, p, li');
+        if (host && c.getBoundingClientRect().width > host.clientWidth + 1) c.classList.add('wide');
+      });
+    });
+  }
+  window.addEventListener('resize', function () { fitMath(slides[cur]); });
+  function typesetRest() {
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 60); };
+    (function tick() {
+      var s = slides.filter(function (x) { return !x._typeset; })[0];
+      if (!s) return;
+      typeset(s).then(function () { idle(tick); });
+    })();
+  }
+  function onMath() { typeset(slides[cur]); fitMath(slides[cur]); setTimeout(typesetRest, 400); }
+  if (window.MathJax && window.MathJax.typesetPromise) onMath();
+  else document.addEventListener('mathjax-ready', onMath);
+
+  /* ---------- índice ---------- */
+  var tocButtons = [];
+  var secDetails = {};
+  (function buildToc() {
+    var lastGroup = null, lastSec = null, ul = null;
+    slides.forEach(function (s, i) {
+      var g = s.dataset.group, sec = s.dataset.sec;
+      if (g !== lastGroup) {
+        var t = document.createElement('div');
+        t.className = 'grp-title';
+        t.textContent = GROUPS[g] || g;
+        toc.appendChild(t);
+        lastGroup = g; lastSec = null;
+      }
+      if (sec !== lastSec) {
+        var d = document.createElement('details');
+        var sum = document.createElement('summary');
+        sum.innerHTML = '<span></span><span class="cnt"></span>';
+        sum.firstChild.textContent = sec;
+        d.appendChild(sum);
+        ul = document.createElement('ul');
+        d.appendChild(ul);
+        toc.appendChild(d);
+        secDetails[g + '|' + sec] = d;
+        d._count = 0; d._cnt = sum.lastChild;
+        lastSec = sec;
+      }
+      var d2 = secDetails[g + '|' + sec];
+      d2._count++; d2._cnt.textContent = d2._count;
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = '<span class="dot"></span><span></span>';
+      b.lastChild.textContent = s.dataset.title;
+      b.style.setProperty('--k', KCOLOR[s.dataset.kind] || 'var(--faint)');
+      b.addEventListener('click', function () { goTo(i); closeMenu(); });
+      b._search = norm(sec + ' ' + s.dataset.title + ' ' + (GROUPS[g] || ''));
+      li.appendChild(b); ul.appendChild(li);
+      tocButtons[i] = b;
+    });
+    var empty = document.createElement('p');
+    empty.className = 'empty'; empty.id = 'toc-empty'; empty.hidden = true;
+    empty.textContent = 'No hay diapositivas con ese texto. Prueba con otra palabra.';
+    toc.appendChild(empty);
+  })();
+  function norm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  buscar.addEventListener('input', function () {
+    var q = norm(buscar.value.trim());
+    var any = false;
+    Object.keys(secDetails).forEach(function (k) {
+      var d = secDetails[k], vis = 0;
+      Array.prototype.forEach.call(d.querySelectorAll('li'), function (li) {
+        var ok = !q || li.firstChild._search.indexOf(q) !== -1;
+        li.hidden = !ok; if (ok) vis++;
+      });
+      d.hidden = vis === 0;
+      if (q) d.open = vis > 0;
+      if (vis) any = true;
+    });
+    Array.prototype.forEach.call(toc.querySelectorAll('.grp-title'), function (t) {
+      var n = t.nextElementSibling, vis = false;
+      while (n && n.tagName === 'DETAILS') { if (!n.hidden) vis = true; n = n.nextElementSibling; }
+      t.hidden = !vis;
+    });
+    $('toc-empty').hidden = any;
+    if (!q) syncToc();
+  });
+
+  /* ---------- menú ---------- */
+  var drawer = $('drawer');
+  function openMenu() {
+    document.body.classList.add('menu-open');
+    drawer.setAttribute('aria-hidden', 'false');
+    $('btn-menu').setAttribute('aria-expanded', 'true');
+    syncToc();
+    var c = tocButtons[cur];
+    if (c) setTimeout(function () { c.scrollIntoView({ block: 'center' }); c.focus({ preventScroll: true }); }, 60);
+  }
+  function closeMenu() {
+    document.body.classList.remove('menu-open');
+    drawer.setAttribute('aria-hidden', 'true');
+    $('btn-menu').setAttribute('aria-expanded', 'false');
+  }
+  $('btn-menu').addEventListener('click', openMenu);
+  $('btn-close').addEventListener('click', closeMenu);
+  $('scrim').addEventListener('click', closeMenu);
+  function syncToc() {
+    var s = slides[cur];
+    Object.keys(secDetails).forEach(function (k) {
+      if (!buscar.value) secDetails[k].open = (k === s.dataset.group + '|' + s.dataset.sec);
+    });
+    tocButtons.forEach(function (b, i) { b.classList.toggle('cur', i === cur); });
+  }
+
+  /* ---------- navegación ---------- */
+  var cur = 0;
+  var groupIdx = {};
+  slides.forEach(function (s) {
+    var g = s.dataset.group;
+    groupIdx[g] = groupIdx[g] || [];
+    groupIdx[g].push(s);
+  });
+  function goTo(i, fromHash) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    var prev = slides[cur];
+    prev.hidden = true;
+    cur = i;
+    var s = slides[cur];
+    s.hidden = false;
+    s.classList.remove('enter'); void s.offsetWidth; s.classList.add('enter');
+    applySteps(s);
+    stage.scrollTop = 0;
+    var g = s.dataset.group;
+    crumb.innerHTML = '<span class="grp"></span><span class="sep">/</span><b></b>';
+    crumb.children[0].textContent = SHORT[g] || g;
+    crumb.children[2].textContent = s.dataset.sec;
+    var list = groupIdx[g], pos = list.indexOf(s) + 1;
+    count.textContent = pos + ' / ' + list.length + ' · ' + s.dataset.title;
+    bar.style.width = (100 * pos / list.length) + '%';
+    $('btn-prev').disabled = cur === 0;
+    $('btn-next').disabled = cur === slides.length - 1;
+    updateStepBtn();
+    syncToc();
+    typeset(s);
+    if (!fromHash) { try { history.replaceState(null, '', '#' + s.dataset.id); } catch (e) {} }
+    store.set('al-last', s.dataset.id);
+    fitMath(s);
+  }
+  function next() { if (cur < slides.length - 1) goTo(cur + 1); }
+  function prev() { if (cur > 0) goTo(cur - 1); }
+  $('btn-next').addEventListener('click', next);
+  $('btn-prev').addEventListener('click', prev);
+
+  document.addEventListener('keydown', function (e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') { if (e.key === 'Escape') closeMenu(); return; }
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var menuOpen = document.body.classList.contains('menu-open');
+    if (e.key === 'Escape') { closeMenu(); return; }
+    if (e.key === 'm' || e.key === 'M') { menuOpen ? closeMenu() : openMenu(); return; }
+    if (menuOpen) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === ' ' || e.key === 'Enter') {
+      if (tag === 'button' || tag === 'a' || tag === 'summary') return;
+      e.preventDefault(); if (!nextStep()) next();
+    }
+    else if (e.key === 'Home') { goTo(0); }
+    else if (e.key === 'End') { goTo(slides.length - 1); }
+  });
+
+  var tx = null, ty = null;
+  stage.addEventListener('touchstart', function (e) { var t = e.touches[0]; tx = t.clientX; ty = t.clientY; }, { passive: true });
+  stage.addEventListener('touchend', function (e) {
+    if (tx === null) return;
+    var t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+    tx = ty = null;
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 50) { dx < 0 ? next() : prev(); }
+  }, { passive: true });
+
+  function fromHash() {
+    var id = decodeURIComponent((location.hash || '').slice(1));
+    return byId[id];
+  }
+  window.addEventListener('hashchange', function () { var i = fromHash(); if (i !== undefined && i !== cur) goTo(i, true); });
+
+  var start = fromHash();
+  if (start === undefined) { var last = store.get('al-last'); start = last && byId[last] !== undefined ? byId[last] : 0; }
+  slides[0].hidden = true;
+  goTo(start, location.hash ? true : false);
+})();
+</script>
+</body>
+</html>
