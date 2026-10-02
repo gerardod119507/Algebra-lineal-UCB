@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mapa conceptual · Álgebra Lineal</title>
+<meta name="description" content="Mapa conceptual desplegable de espacios vectoriales y espacios con producto interno.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' },
+    options: { enableMenu: false },
+    startup: { typeset: false }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Layout: lienzo a pantalla completa sobre papel milimetrado; árbol horizontal que se despliega
+   desde la raíz, barra mínima arriba y ficha de detalle que aparece al elegir un concepto. */
+:root {
+  --bg: #eef1f4;
+  --sheet: #fbfcfd;
+  --bar: rgba(244, 246, 248, .9);
+  --ink: #27313b;
+  --muted: #687582;
+  --faint: #9aa5b0;
+  --line: #d9dfe6;
+  --grid: rgba(74, 114, 144, .055);
+  --shadow: rgba(39, 49, 59, .35);
+  --accent: #4a7290;
+  --accent-ink: #ffffff;
+  --t4: #4a7290;  --t4-bg: #eaf1f6;
+  --t5: #7d6896;  --t5-bg: #f1eef6;
+  --met: #4b836a; --met-bg: #e9f3ee;
+  --link: #b9c3cd;
+  --hit: #9a7642;
+  --scrim: rgba(25, 32, 40, .28);
+  --f-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151a20; --sheet: #1c232b; --bar: rgba(24, 30, 37, .9);
+    --ink: #dde4ea; --muted: #9ba8b4; --faint: #6d7a87; --line: #2e3842;
+    --grid: rgba(143, 179, 207, .045); --shadow: rgba(0, 0, 0, .7);
+    --accent: #8fb3cf; --accent-ink: #13202b;
+    --t4: #8fb3cf; --t4-bg: #1f2c37;
+    --t5: #b8a3cf; --t5-bg: #282436;
+    --met: #8bc4a8; --met-bg: #1d2e28;
+    --link: #3c4855; --hit: #d3b17d; --scrim: rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151a20; --sheet: #1c232b; --bar: rgba(24, 30, 37, .9);
+  --ink: #dde4ea; --muted: #9ba8b4; --faint: #6d7a87; --line: #2e3842;
+  --grid: rgba(143, 179, 207, .045); --shadow: rgba(0, 0, 0, .7);
+  --accent: #8fb3cf; --accent-ink: #13202b;
+  --t4: #8fb3cf; --t4-bg: #1f2c37;
+  --t5: #b8a3cf; --t5-bg: #282436;
+  --met: #8bc4a8; --met-bg: #1d2e28;
+  --link: #3c4855; --hit: #d3b17d; --scrim: rgba(0, 0, 0, .45);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; color: inherit; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.btn[hidden] { display: none; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+
+/* barra */
+.bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 16px; background: var(--bar); border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(8px); position: relative; z-index: 5;
+}
+.bar h1 { margin: 0 8px 0 0; font-family: var(--f-display); font-weight: 500; font-size: 21px; white-space: nowrap; }
+.spacer { flex: 1; }
+.btn {
+  height: 34px; min-width: 34px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--line); border-radius: 8px; background: transparent; cursor: pointer; font-size: 14px; text-decoration: none; color: var(--ink);
+}
+.btn:hover { background: var(--t4-bg); border-color: var(--faint); }
+.btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.btn[aria-pressed="true"] { background: var(--t4-bg); border-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg .btn { border: 0; border-radius: 0; }
+.seg .btn + .btn { border-left: 1px solid var(--line); }
+.find { position: relative; }
+.find input { height: 34px; width: 210px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--sheet); }
+@media (max-width: 760px) {
+  .bar h1 { font-size: 18px; flex: 1; }
+  .hide-sm { display: none !important; }
+  .find { order: 10; flex: 1 1 100%; }
+  .find input { width: 100%; }
+}
+
+/* lienzo */
+.view { position: relative; overflow: hidden; touch-action: none; cursor: grab; }
+.view.dragging { cursor: grabbing; }
+.world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.links { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.links path { fill: none; stroke: var(--link); stroke-width: 1.6; }
+.links path.on { stroke: var(--accent); stroke-width: 2.2; }
+.node {
+  position: absolute; left: 0; top: 0; width: 196px; min-height: 50px;
+  display: flex; align-items: center; gap: 8px; text-align: left;
+  padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--sheet); color: var(--ink);
+  font-size: 14.5px; line-height: 1.25; font-weight: 500;
+  box-shadow: 0 8px 18px -16px var(--shadow);
+  transition: background .15s, border-color .15s, box-shadow .15s, opacity .2s;
+}
+.node .lbl { flex: 1; min-width: 0; }
+.node .more {
+  flex: none; font-family: var(--f-mono); font-size: 11px; font-weight: 500;
+  border-radius: 999px; padding: 1px 7px; background: var(--bg); color: var(--muted);
+}
+.node.open .more { background: transparent; color: var(--faint); }
+.node.t4 { border-color: color-mix(in srgb, var(--t4) 35%, var(--line)); }
+.node.t5 { border-color: color-mix(in srgb, var(--t5) 35%, var(--line)); }
+.node.concept.t4 { background: var(--t4-bg); }
+.node.concept.t5 { background: var(--t5-bg); }
+.node.met { border-style: dashed; border-color: var(--met); }
+.node.root { background: var(--ink); color: var(--sheet); border-color: var(--ink); font-family: var(--f-display); font-size: 17px; font-weight: 500; }
+.node.root .more { background: transparent; color: var(--sheet); opacity: .7; }
+.node.sel { box-shadow: 0 0 0 2px var(--accent), 0 10px 24px -16px var(--shadow); }
+.node.hit { box-shadow: 0 0 0 2px var(--hit); }
+.node.dim { opacity: .35; }
+.node[hidden] { display: none; }
+
+.legend {
+  position: absolute; left: 16px; bottom: 16px; z-index: 3;
+  display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px;
+  background: var(--bar); border: 1px solid var(--line); border-radius: 8px;
+  font-size: 12.5px; color: var(--muted); max-width: calc(100% - 32px);
+}
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 1px solid; }
+.legend .l4 { background: var(--t4-bg); border-color: var(--t4); }
+.legend .l5 { background: var(--t5-bg); border-color: var(--t5); }
+.legend .lm { background: transparent; border: 1px dashed var(--met); }
+.hint { position: absolute; right: 16px; bottom: 16px; z-index: 3; font-size: 12.5px; color: var(--muted); background: var(--bar); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+@media (max-width: 760px) { .hint { display: none; } }
+
+/* lista */
+.list { overflow-y: auto; padding: 24px 16px 60px; }
+.list-inner { max-width: 760px; margin: 0 auto; }
+.list details { margin-left: 18px; border-left: 1px solid var(--line); padding-left: 12px; }
+.list > .list-inner > details { margin-left: 0; border-left: 0; padding-left: 0; }
+.list summary { cursor: pointer; padding: 6px 4px; list-style: none; display: flex; gap: 8px; align-items: baseline; }
+.list summary::-webkit-details-marker { display: none; }
+.list summary::before { content: "›"; width: .8em; color: var(--faint); display: inline-block; transition: transform .15s; }
+.list details[open] > summary::before { transform: rotate(90deg); }
+.list .leaf { margin-left: 18px; padding: 6px 4px 6px 16px; border-left: 1px solid var(--line); }
+.list .item { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-weight: 500; }
+.list .item:hover { color: var(--accent); }
+.list .sub { color: var(--muted); font-size: 14px; }
+
+/* ficha */
+.panel {
+  position: absolute; z-index: 6; top: 12px; right: 12px; bottom: 12px;
+  width: min(380px, calc(100% - 24px));
+  background: var(--sheet); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 30px 60px -40px var(--shadow);
+  display: grid; grid-template-rows: auto 1fr auto;
+  transform: translateX(calc(100% + 24px)); transition: transform .25s ease;
+}
+.panel.show { transform: none; }
+@media (max-width: 760px) {
+  .panel { top: auto; left: 12px; right: 12px; width: auto; max-height: 62%; transform: translateY(calc(100% + 24px)); }
+}
+@media (prefers-reduced-motion: reduce) { .panel { transition: none; } }
+.panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 16px 16px 4px 20px; }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.panel h2 { margin: 4px 0 0; font-family: var(--f-display); font-weight: 500; font-size: 26px; line-height: 1.15; text-wrap: balance; }
+.panel-body { overflow-y: auto; padding: 8px 20px 12px; min-width: 0; }
+.panel-body p { margin: 0 0 12px; }
+.formula { background: var(--bg); border-radius: 8px; padding: 6px 12px; margin: 6px 0 14px; overflow-x: auto; }
+.formula mjx-container[display="true"] { margin: .5em 0 !important; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+.chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 13.5px; background: transparent; cursor: pointer; text-decoration: none; color: var(--ink); }
+.chip:hover { border-color: var(--accent); background: var(--t4-bg); }
+.label { display: block; margin: 12px 0 6px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.panel-foot { border-top: 1px solid var(--line); padding: 12px 16px; }
+.panel-foot a {
+  display: flex; justify-content: space-between; align-items: center;
+  text-decoration: none; font-weight: 500; padding: 9px 12px; border-radius: 8px;
+  background: var(--accent); color: var(--accent-ink);
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <h1>Mapa conceptual</h1>
+    <div class="seg" role="group" aria-label="Forma de ver el mapa">
+      <button class="btn" id="v-map" type="button" aria-pressed="true">Mapa</button>
+      <button class="btn" id="v-list" type="button" aria-pressed="false">Lista</button>
+    </div>
+    <button class="btn" id="b-expand" type="button" title="Desplegar todo">Desplegar<span class="hide-sm">todo</span></button>
+    <button class="btn" id="b-collapse" type="button" title="Plegar todo">Plegar</button>
+    <span class="spacer hide-sm"></span>
+    <div class="find"><input id="buscar" type="search" placeholder="Buscar un concepto…" autocomplete="off" aria-label="Buscar un concepto"></div>
+    <button class="btn hide-sm" id="b-zout" type="button" aria-label="Alejar" title="Alejar"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+    <button class="btn hide-sm" id="b-zin" type="button" aria-label="Acercar" title="Acercar"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></button>
+    <button class="btn" id="b-fit" type="button" aria-label="Encuadrar el mapa" title="Encuadrar"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="btn" id="b-theme" type="button" aria-label="Cambiar entre tema claro y oscuro" title="Tema claro u oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
+    <a class="btn" href="index.html" title="Ir a la plataforma de diapositivas"><span class="hide-sm">Diapositivas</span><span aria-hidden="true">→</span><span class="sr">Diapositivas</span></a>
+  </header>
+
+  <main class="view" id="view">
+    <div class="world" id="world"><svg class="links" id="links" width="1" height="1"></svg></div>
+    <div class="legend"><span><i class="l4"></i>Tema 4</span><span><i class="l5"></i>Tema 5</span><span><i class="lm"></i>Método o caso particular</span></div>
+    <div class="hint">Clic en un concepto para desplegarlo · arrastra para moverte · rueda para acercar</div>
+    <aside class="panel" id="panel" aria-live="polite">
+      <div class="panel-head">
+        <div><div class="eyebrow" id="p-eyebrow"></div><h2 id="p-title"></h2></div>
+        <button class="btn" id="p-close" type="button" aria-label="Cerrar la ficha"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="panel-body" id="p-body"></div>
+      <div class="panel-foot"><a id="p-go" href="index.html">Ver en las diapositivas <span aria-hidden="true">→</span></a></div>
+    </aside>
+  </main>
+  <section class="list" id="list" hidden><div class="list-inner" id="list-inner"></div></section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  /* ---------------- contenido del mapa ---------------- */
+  var DATA = {
+    id: 'root', label: 'Álgebra Lineal · Temas 4 y 5', kind: 'root', slide: 'inicio',
+    text: 'Dos grandes ideas: los <b>espacios vectoriales</b> (dónde viven los vectores y cómo se combinan) y el <b>producto interno</b> (cómo medirlos).',
+    children: [
+      { id: 'ev', label: 'Espacio vectorial (E.V.)', kind: 'concept', tema: 't4', slide: 't4-def',
+        text: 'Conjunto no vacío $V$ con una suma $u+v$ y un producto por escalar $\\alpha u$ que siempre quedan dentro de $V$ y cumplen 8 propiedades.',
+        children: [
+          { id: 'prop', label: 'Las 8 propiedades', kind: 'concept', tema: 't4', slide: 't4-prop1',
+            text: 'Reglas que deben cumplir la suma y el producto por escalar. Si falla una sola, no es espacio vectorial.',
+            children: [
+              { id: 'prop-s', label: 'Suma (1–4)', kind: 'met', tema: 't4', slide: 't4-prop1',
+                text: 'Asociativa, existe el vector cero, cada vector tiene opuesto y la suma es conmutativa.',
+                formula: 'u+0=u,\\qquad u+(-u)=0,\\qquad u+v=v+u' },
+              { id: 'prop-p', label: 'Producto por escalar (5–8)', kind: 'met', tema: 't4', slide: 't4-prop2',
+                text: 'Dos distributivas, la asociativa del producto y que multiplicar por 1 no cambia nada.',
+                formula: '\\alpha(u+v)=\\alpha u+\\alpha v,\\qquad 1u=u' }
+            ] },
+          { id: 'ejs', label: 'Ejemplos', kind: 'concept', tema: 't4', slide: 't4-ej-rn',
+            text: 'Los espacios vectoriales con los que trabajamos en todo el curso.',
+            children: [
+              { id: 'rn', label: 'ℝⁿ', kind: 'met', tema: 't4', slide: 't4-ej-rn', text: 'Listas de $n$ números. Se suma y se multiplica componente a componente.', formula: '(a_1,\\dots,a_n)+(b_1,\\dots,b_n)=(a_1+b_1,\\dots,a_n+b_n)' },
+              { id: 'mmn', label: 'Matrices Mₘₓₙ(ℝ)', kind: 'met', tema: 't4', slide: 't4-ej-mat', text: 'Matrices del mismo tamaño, con la suma de matrices y el producto por escalar.' },
+              { id: 'pn', label: 'Polinomios Pₙ(ℝ)', kind: 'met', tema: 't4', slide: 't4-ej-pol', text: 'Polinomios de grado a lo sumo $n$. Se suman los coeficientes del mismo grado.' },
+              { id: 'contra', label: 'Contraejemplo', kind: 'met', tema: 't4', slide: 't4-ej-no', text: 'En $\\mathbb{R}^2$ con $\\alpha(a_1,a_2)=(2\\alpha a_1,2\\alpha a_2)$ falla la propiedad 7, así que no es E.V.' }
+            ] },
+          { id: 'sub', label: 'Subespacio', kind: 'concept', tema: 't4', slide: 't4-sub-def', tp: ['tp1a', 'tp1b', 'tp1c', 'tp1d'],
+            text: 'Parte $W$ de $V$ que también es espacio vectorial. Basta comprobar que es cerrado bajo la suma y el producto por escalar.',
+            formula: 'u,v\\in W\\Rightarrow u+v\\in W,\\qquad \\alpha u\\in W',
+            children: [
+              { id: 'sub-cero', label: 'Primero: ¿está el 0?', kind: 'met', tema: 't4', slide: 't4-sub-ej2', text: 'Si el vector cero no está en $W$, no es subespacio. Una ecuación con un número suelto ($=1$) o una desigualdad ($>0$) lo delata.' },
+              { id: 'sub-hom', label: 'Ecuaciones = 0 → sí', kind: 'met', tema: 't4', slide: 't4-sub-ej3', text: 'Si $W$ se describe con ecuaciones lineales igualadas a cero, siempre es subespacio.', formula: 'W=\\{(a,b,c)\\,/\\,a+2b-c=0\\}' }
+            ] },
+          { id: 'cl', label: 'Combinación lineal', kind: 'concept', tema: 't4', slide: 't4-cl-def', tp: ['tp2a', 'tp2b', 'tp2c', 'tp3'],
+            text: '$v$ es combinación lineal de $A$ si se puede armar con los vectores de $A$ multiplicados por números y sumados.',
+            formula: 'v=\\sum_{i=1}^{n}\\alpha_iv_i',
+            children: [
+              { id: 'gen', label: 'Subespacio generado', kind: 'concept', tema: 't4', slide: 't4-gen-def', tp: ['tp11a', 'tp11b', 'tp11c'], rel: ['sub'],
+                text: 'El conjunto de <b>todas</b> las combinaciones lineales de $A$. Siempre es un subespacio.',
+                formula: 'W=\\left\\{v\\in V\\,/\\,v=\\textstyle\\sum\\alpha_iv_i\\right\\}' },
+              { id: 'sg', label: 'Sistema de generadores', kind: 'concept', tema: 't4', slide: 't4-sg-def', tp: ['tp7a', 'tp7b', 'tp7c'],
+                text: '$A$ genera $V$ si <b>todo</b> vector de $V$ es combinación lineal de $A$.',
+                formula: 'A\\text{ es S.G. de }V\\iff\\forall v\\in V,\\;v=\\textstyle\\sum\\alpha_iv_i' }
+            ] },
+          { id: 'li', label: 'Independencia lineal', kind: 'concept', tema: 't4', slide: 't4-li-def', tp: ['tp4a', 'tp4b', 'tp4c', 'tp4d', 'tp5', 'tp6'],
+            text: 'Pregunta si en una familia «sobra» algún vector. Se iguala la combinación lineal a cero.',
+            formula: '\\alpha_1v_1+\\alpha_2v_2+\\dots+\\alpha_nv_n=0_V',
+            children: [
+              { id: 'li-li', label: 'L.I.', kind: 'concept', tema: 't4', slide: 't4-li-def', text: 'La única solución es $\\alpha_1=\\dots=\\alpha_n=0$. Ningún vector sobra.' },
+              { id: 'li-ld', label: 'L.D.', kind: 'concept', tema: 't4', slide: 't4-li-def', text: 'Hay una solución con algún $\\alpha_i\\neq0$. Al menos un vector es C.L. de los demás.' },
+              { id: 'li-det', label: 'Atajo: determinante', kind: 'met', tema: 't4', slide: 't4-li-met', text: 'Si la matriz de los vectores es cuadrada: $\\det\\neq0\\Rightarrow$ L.I. y $\\det=0\\Rightarrow$ L.D. Con más vectores que la dimensión, siempre L.D.' }
+            ] },
+          { id: 'base', label: 'Base', kind: 'concept', tema: 't4', slide: 't4-base-def', tp: ['tp8a', 'tp8b', 'tp8c', 'tp8d'], rel: ['li', 'sg'],
+            text: 'Familia que es L.I. y además genera el espacio: alcanza para armar todo y no sobra ninguno.',
+            formula: '\\text{Base}=\\text{L.I.}+\\text{S.G.}',
+            children: [
+              { id: 'dim', label: 'Dimensión', kind: 'concept', tema: 't4', slide: 't4-dim-teo',
+                text: 'Número de vectores de cualquier base. Todas las bases de un espacio tienen la misma cantidad.',
+                children: [
+                  { id: 'dim-rn', label: 'dim ℝⁿ = n', kind: 'met', tema: 't4', slide: 't4-dim-ej', text: 'Base canónica de $\\mathbb{R}^3$: $\\{(1,0,0),(0,1,0),(0,0,1)\\}$.' },
+                  { id: 'dim-m', label: 'dim Mₘₓₙ = m·n', kind: 'met', tema: 't4', slide: 't4-dim-ej', text: '$M_2(\\mathbb{R})$ tiene dimensión 4: una matriz con un 1 en cada posición.' },
+                  { id: 'dim-p', label: 'dim Pₙ = n + 1', kind: 'met', tema: 't4', slide: 't4-dim-ej', text: 'Base de $P_2(\\mathbb{R})$: $\\{t^2,\\,t,\\,1\\}$, así que $\\dim P_2=3$.' }
+                ] },
+              { id: 'bsub', label: 'Base de un subespacio', kind: 'met', tema: 't4', slide: 't4-bsub-met', tp: ['tp9a', 'tp9b', 'tp9c', 'tp10', 'tp12a', 'tp12b', 'tp12c'], rel: ['sub'],
+                text: 'Despejar, sustituir en el vector genérico y separar por cada variable libre. La dimensión es el número de variables libres.',
+                formula: '(a,b,a+b)=a(1,0,1)+b(0,1,1)' }
+            ] }
+        ] },
+      { id: 'pi', label: 'Producto interno (P.I.)', kind: 'concept', tema: 't5', slide: 't5-def',
+        text: 'Regla que a cada par de vectores le asigna un número real $\\langle u,v\\rangle$. Cumple: positivo, simétrico, se reparte sobre la suma y saca los escalares.',
+        formula: '\\langle u,u\\rangle>0,\\quad \\langle u,v\\rangle=\\langle v,u\\rangle,\\quad \\langle cu,v\\rangle=c\\langle u,v\\rangle',
+        children: [
+          { id: 'std', label: 'P.I. estándar', kind: 'concept', tema: 't5', slide: 't5-std-rn',
+            text: 'Los productos internos que se usan por defecto en cada espacio.',
+            children: [
+              { id: 'std-rn', label: 'En ℝⁿ', kind: 'met', tema: 't5', slide: 't5-std-rn', text: 'Multiplicar componente a componente y sumar.', formula: '\\langle u,v\\rangle=u_1v_1+\\dots+u_nv_n' },
+              { id: 'std-pn', label: 'En Pₙ(ℝ)', kind: 'met', tema: 't5', slide: 't5-std-pn', text: 'Multiplicar los polinomios e integrar de 0 a 1.', formula: '\\langle P,Q\\rangle=\\int_0^1P(t)Q(t)\\,dt' },
+              { id: 'std-mn', label: 'En Mₙ(ℝ)', kind: 'met', tema: 't5', slide: 't5-std-mn', text: 'La traza de $A^tB$: es igual a multiplicar entrada por entrada y sumar.', formula: '\\langle A,B\\rangle=\\operatorname{tr}(A^tB)' }
+            ] },
+          { id: 'eucl', label: 'Espacio euclidiano', kind: 'concept', tema: 't5', slide: 't5-euclid', text: 'Un E.V. con producto interno se llama espacio con P.I.; si además tiene dimensión finita, espacio euclidiano.' },
+          { id: 'norma', label: 'Norma', kind: 'concept', tema: 't5', slide: 't5-norma',
+            text: 'Longitud del vector: producto interno consigo mismo y raíz cuadrada.', formula: '|v|=\\sqrt{\\langle v,v\\rangle}',
+            children: [
+              { id: 'dist', label: 'Distancia', kind: 'concept', tema: 't5', slide: 't5-dist', tp: ['tp13a', 'tp13b', 'tp13c', 'tp13d'], text: 'Norma de la diferencia de los dos vectores.', formula: 'd(u,v)=|u-v|' },
+              { id: 'unit', label: 'Vector unitario', kind: 'met', tema: 't5', slide: 't5-unit', text: 'Dividir por la norma da un vector de longitud 1 en la misma dirección («normalizar»).', formula: 'u=\\frac{v}{|v|}' }
+            ] },
+          { id: 'ort', label: 'Ortogonalidad', kind: 'concept', tema: 't5', slide: 't5-ort', tp: ['tp14a', 'tp14b', 'tp14c', 'tp14d'],
+            text: 'Dos vectores son ortogonales (perpendiculares) si su producto interno es cero.', formula: '\\langle u,v\\rangle=0',
+            children: [
+              { id: 'c-ort', label: 'Conjunto ortogonal', kind: 'concept', tema: 't5', slide: 't5-conj-ort', text: 'Todas las parejas de vectores distintos son ortogonales.', formula: 'S=\\{(1,0,0),(0,1,-1),(0,1,1)\\}' },
+              { id: 'c-on', label: 'Conjunto ortonormal', kind: 'concept', tema: 't5', slide: 't5-ortonormal', rel: ['unit'], text: 'Ortogonal y, además, todos sus vectores tienen norma 1.' },
+              { id: 'gs', label: 'Gram–Schmidt', kind: 'concept', tema: 't5', slide: 't5-gs-teo', tp: ['tp15a', 'tp15b', 'tp15c'], rel: ['base', 'c-on'],
+                text: 'Convierte cualquier base en una base ortonormal, en dos pasos.',
+                children: [
+                  { id: 'gs1', label: 'Paso 1: base ortogonal', kind: 'met', tema: 't5', slide: 't5-gs-teo', text: 'A cada vector se le quita su «sombra» sobre los anteriores.', formula: 'z_k=w_k-\\sum_{i<k}\\frac{\\langle w_k,z_i\\rangle}{|z_i|^2}\\,z_i' },
+                  { id: 'gs2', label: 'Paso 2: normalizar', kind: 'met', tema: 't5', slide: 't5-gs-norm', text: 'Se divide cada $z_k$ por su norma.', formula: 'u_k=\\frac{z_k}{|z_k|}' }
+                ] }
+            ] }
+        ] }
+    ]
+  };
+  var TP_NAMES = {
+    tp1a: '1a', tp1b: '1b', tp1c: '1c', tp1d: '1d', tp2a: '2a', tp2b: '2b', tp2c: '2c', tp3: '3',
+    tp4a: '4a', tp4b: '4b', tp4c: '4c', tp4d: '4d', tp5: '5', tp6: '6', tp7a: '7a', tp7b: '7b', tp7c: '7c',
+    tp8a: '8a', tp8b: '8b', tp8c: '8c', tp8d: '8d', tp9a: '9a', tp9b: '9b', tp9c: '9c', tp10: '10',
+    tp11a: '11a', tp11b: '11b', tp11c: '11c', tp12a: '12 · W₁', tp12b: '12 · W₂', tp12c: '12 · W₁∩W₂',
+    tp13a: '13a', tp13b: '13b', tp13c: '13c', tp13d: '13d', tp14a: '14a', tp14b: '14b', tp14c: '14c', tp14d: '14d',
+    tp15a: '15a', tp15b: '15b', tp15c: '15c'
+  };
+  var PLATFORM = 'index.html';
+
+  /* ---------------- estructura ---------------- */
+  var nodes = [], byId = {};
+  (function walk(n, parent, depth) {
+    n.parent = parent; n.depth = depth; n.children = n.children || [];
+    n.open = depth < 2;
+    n.x = n.y = n.px = n.py = 0;
+    if (!n.tema && parent) n.tema = parent.tema;
+    nodes.push(n); byId[n.id] = n;
+    n.children.forEach(function (c) { walk(c, n, depth + 1); });
+  })(DATA, null, 0);
+
+  var $ = function (id) { return document.getElementById(id); };
+  var view = $('view'), world = $('world'), svg = $('links');
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  var root = document.documentElement;
+  var t0 = store.get('al-theme');
+  if (t0 === 'light' || t0 === 'dark') root.setAttribute('data-theme', t0);
+  $('b-theme').addEventListener('click', function () {
+    var a = root.getAttribute('data-theme');
+    var dark = a ? a === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    store.set('al-theme', dark ? 'light' : 'dark');
+  });
+
+  var NS = 'http://www.w3.org/2000/svg';
+  nodes.forEach(function (n) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'node ' + (n.kind === 'root' ? 'root' : (n.kind + ' ' + n.tema));
+    b.innerHTML = '<span class="lbl"></span>' + (n.children.length ? '<span class="more"></span>' : '');
+    b.firstChild.textContent = n.label;
+    b.addEventListener('click', function (e) { e.stopPropagation(); if (moved) return; onNode(n); });
+    world.appendChild(b);
+    n.el = b;
+    if (n.parent) {
+      var p = document.createElementNS(NS, 'path');
+      svg.appendChild(p); n.link = p;
+    }
+  });
+
+  /* ---------------- disposición ---------------- */
+  var W = 196, GAPX = 74, ROWH = 62;
+  function visible(n) { for (var p = n.parent; p; p = p.parent) if (!p.open) return false; return true; }
+  function layout() {
+    var row = 0;
+    (function place(n) {
+      n.tx = n.depth * (W + GAPX);
+      var kids = n.open ? n.children : [];
+      if (!kids.length) { n.ty = row * ROWH; row++; return; }
+      kids.forEach(place);
+      n.ty = (kids[0].ty + kids[kids.length - 1].ty) / 2;
+    })(DATA);
+    nodes.forEach(function (n) {
+      if (!visible(n)) { var a = n.parent; while (!visible(a)) a = a.parent; n.tx = a.tx; n.ty = a.ty; }
+    });
+  }
+  function nodeH(n) { return n.el.offsetHeight || 50; }
+  function draw() {
+    nodes.forEach(function (n) {
+      var vis = visible(n);
+      n.el.style.transform = 'translate(' + n.x + 'px,' + n.y + 'px)';
+      n.el.hidden = !vis && !n._leaving;
+      n.el.style.opacity = vis ? '' : '0';
+      n.el.classList.toggle('open', n.open);
+      var m = n.el.querySelector('.more');
+      if (m) m.textContent = n.open ? '−' : '+' + n.children.length;
+      n.el.setAttribute('aria-expanded', n.children.length ? String(n.open) : 'false');
+      if (n.link) {
+        var p = n.parent, h1 = nodeH(p), h2 = nodeH(n);
+        var x1 = p.x + W, y1 = p.y + h1 / 2, x2 = n.x, y2 = n.y + h2 / 2, mx = (x1 + x2) / 2;
+        n.link.setAttribute('d', 'M' + x1 + ',' + y1 + ' C' + mx + ',' + y1 + ' ' + mx + ',' + y2 + ' ' + x2 + ',' + y2);
+        n.link.style.display = vis || n._leaving ? '' : 'none';
+        n.link.style.opacity = vis ? '' : '0';
+      }
+    });
+  }
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var anim = null;
+  function relayout(anchor) {
+    var before = anchor ? toScreen(anchor.x, anchor.y) : null;
+    nodes.forEach(function (n) { n.px = n.x; n.py = n.y; n._leaving = n.el.hidden === false && !visible(n); });
+    layout();
+    if (anchor && before) {
+      // mantener el nodo tocado en el mismo lugar de la pantalla
+      cam.x = before.x - anchor.tx * cam.k; cam.y = before.y - anchor.ty * cam.k; applyCam();
+    }
+    if (anim) cancelAnimationFrame(anim);
+    var start = performance.now(), dur = reduce ? 0 : 260;
+    (function frame(now) {
+      var t = dur ? Math.min(1, (now - start) / dur) : 1;
+      var e = 1 - Math.pow(1 - t, 3);
+      nodes.forEach(function (n) { n.x = n.px + (n.tx - n.px) * e; n.y = n.py + (n.ty - n.py) * e; });
+      if (t >= 1) nodes.forEach(function (n) { n._leaving = false; });
+      draw();
+      if (t < 1) anim = requestAnimationFrame(frame);
+    })(start);
+  }
+
+  /* ---------------- cámara ---------------- */
+  var cam = { x: 24, y: 24, k: 1 };
+  function applyCam() { world.style.transform = 'translate(' + cam.x + 'px,' + cam.y + 'px) scale(' + cam.k + ')'; }
+  function toScreen(x, y) { return { x: cam.x + x * cam.k, y: cam.y + y * cam.k }; }
+  function zoomAt(f, sx, sy) {
+    var k = Math.max(0.35, Math.min(1.8, cam.k * f));
+    cam.x = sx - (sx - cam.x) * (k / cam.k); cam.y = sy - (sy - cam.y) * (k / cam.k); cam.k = k; applyCam();
+  }
+  function fit() {
+    var vis = nodes.filter(visible);
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    vis.forEach(function (n) { minX = Math.min(minX, n.tx); minY = Math.min(minY, n.ty); maxX = Math.max(maxX, n.tx + W); maxY = Math.max(maxY, n.ty + nodeH(n)); });
+    var r = view.getBoundingClientRect(), pad = 32;
+    // Si el árbol es muy alto no lo encogemos hasta hacerlo ilegible: se alinea arriba y se recorre arrastrando.
+    var k = Math.min(1.1, (r.width - pad * 2) / (maxX - minX), (r.height - pad * 2 - 40) / (maxY - minY));
+    cam.k = Math.max(0.6, Math.min(k, 1.1));
+    cam.k = Math.min(cam.k, Math.max(0.35, (r.width - pad * 2) / (maxX - minX)));
+    cam.x = (r.width - (maxX - minX) * cam.k) / 2 - minX * cam.k;
+    var h = (maxY - minY) * cam.k;
+    cam.y = h < r.height - 40 - pad * 2 ? (r.height - 40 - h) / 2 - minY * cam.k : pad - minY * cam.k;
+    applyCam();
+  }
+  $('b-zin').addEventListener('click', function () { var r = view.getBoundingClientRect(); zoomAt(1.2, r.width / 2, r.height / 2); });
+  $('b-zout').addEventListener('click', function () { var r = view.getBoundingClientRect(); zoomAt(1 / 1.2, r.width / 2, r.height / 2); });
+  $('b-fit').addEventListener('click', fit);
+  view.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var r = view.getBoundingClientRect();
+    if (e.ctrlKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)) zoomAt(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top);
+    else { cam.x -= e.deltaX; applyCam(); }
+  }, { passive: false });
+
+  var pts = {}, moved = false, last = null, pinch = null;
+  view.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('.panel, .legend')) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    moved = false; last = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pts);
+    if (ids.length === 2) {
+      var a = pts[ids[0]], b = pts[ids[1]];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), k: cam.k };
+    }
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!pts[e.pointerId]) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pts);
+    if (ids.length === 2 && pinch) {
+      var a = pts[ids[0]], b = pts[ids[1]], r = view.getBoundingClientRect();
+      var d = Math.hypot(a.x - b.x, a.y - b.y);
+      zoomAt((pinch.k * d / pinch.d) / cam.k, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top);
+      moved = true; return;
+    }
+    var dx = e.clientX - last.x, dy = e.clientY - last.y;
+    if (!moved && Math.hypot(dx, dy) < 4) return;
+    moved = true; view.classList.add('dragging');
+    cam.x += dx; cam.y += dy; last = { x: e.clientX, y: e.clientY }; applyCam();
+  });
+  function up(e) {
+    delete pts[e.pointerId];
+    if (Object.keys(pts).length < 2) pinch = null;
+    view.classList.remove('dragging');
+    setTimeout(function () { moved = false; }, 0);
+  }
+  window.addEventListener('pointerup', up);
+  window.addEventListener('pointercancel', up);
+  view.addEventListener('click', function (e) { if (!e.target.closest('.node, .panel') && !moved) closePanel(); });
+
+  /* ---------------- ficha de detalle ---------------- */
+  var sel = null;
+  function onNode(n) {
+    select(n);
+    if (n.children.length) {
+      n.open = !n.open; if (!n.open) collapseAll(n); relayout(n);
+      if (n.open) setTimeout(function () { ensureVisible(n); }, reduce ? 0 : 280);
+    }
+  }
+  // Si los hijos recién desplegados quedan fuera de la vista (o debajo de la ficha), movemos la cámara.
+  function ensureVisible(n) {
+    var r = view.getBoundingClientRect();
+    var panelW = $('panel').classList.contains('show') && r.width > 760 ? 400 : 0;
+    var bottomPad = r.width <= 760 && $('panel').classList.contains('show') ? r.height * 0.62 : 0;
+    var group = [n].concat(n.children);
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    group.forEach(function (m) { minX = Math.min(minX, m.tx); minY = Math.min(minY, m.ty); maxX = Math.max(maxX, m.tx + W); maxY = Math.max(maxY, m.ty + nodeH(m)); });
+    var a = toScreen(minX, minY), b = toScreen(maxX, maxY), pad = 20;
+    var right = r.width - panelW - pad, bottom = r.height - bottomPad - pad - 40;
+    var dx = 0, dy = 0;
+    if (b.x > right) dx = right - b.x;
+    if (a.x + dx < pad) dx = pad - a.x;
+    if (b.y > bottom) dy = bottom - b.y;
+    if (a.y + dy < pad) dy = pad - a.y;
+    if (dx || dy) { cam.x += dx; cam.y += dy; world.style.transition = reduce ? '' : 'transform .25s ease'; applyCam(); setTimeout(function () { world.style.transition = ''; }, 300); }
+  }
+  function collapseAll(n) { n.children.forEach(function (c) { c.open = false; collapseAll(c); }); }
+  function select(n) {
+    sel = n;
+    nodes.forEach(function (m) { m.el.classList.toggle('sel', m === n); });
+    var path = []; for (var p = n; p; p = p.parent) path.push(p);
+    nodes.forEach(function (m) { if (m.link) m.link.classList.toggle('on', path.indexOf(m) !== -1 && m !== DATA); });
+    $('p-eyebrow').textContent = n.kind === 'root' ? 'Mapa' : (n.tema === 't4' ? 'Tema 4 · Espacios vectoriales' : 'Tema 5 · Producto interno');
+    $('p-title').textContent = n.label;
+    var h = '<p>' + n.text + '</p>';
+    if (n.formula) h += '<div class="formula">$$' + n.formula + '$$</div>';
+    if (n.children.length) {
+      h += '<span class="label">Se despliega en</span><div class="chips">' +
+        n.children.map(function (c) { return '<button type="button" class="chip" data-node="' + c.id + '">' + esc(c.label) + '</button>'; }).join('') + '</div>';
+    }
+    if (n.rel) {
+      h += '<span class="label">Relacionado con</span><div class="chips">' +
+        n.rel.map(function (r) { return '<button type="button" class="chip" data-node="' + r + '">' + esc(byId[r].label) + '</button>'; }).join('') + '</div>';
+    }
+    if (n.tp) {
+      h += '<span class="label">Ejercicios del TP N° 2</span><div class="chips">' +
+        n.tp.map(function (t) { return '<a class="chip" href="' + PLATFORM + '#' + t + '">Ej. ' + TP_NAMES[t] + '</a>'; }).join('') + '</div>';
+    }
+    var body = $('p-body'); body.innerHTML = h; body.scrollTop = 0;
+    $('p-go').href = PLATFORM + '#' + n.slide;
+    $('panel').classList.add('show');
+    if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([body]).catch(function () {});
+  }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function closePanel() {
+    $('panel').classList.remove('show'); sel = null;
+    nodes.forEach(function (m) { m.el.classList.remove('sel'); if (m.link) m.link.classList.remove('on'); });
+  }
+  $('p-close').addEventListener('click', closePanel);
+  $('p-body').addEventListener('click', function (e) {
+    var c = e.target.closest('[data-node]');
+    if (!c) return;
+    reveal(byId[c.getAttribute('data-node')]);
+  });
+  function reveal(n) {
+    for (var p = n.parent; p; p = p.parent) p.open = true;
+    relayout();
+    if (listMode) { openListPath(n); select(n); return; }
+    setTimeout(function () { centerOn(n); select(n); }, reduce ? 0 : 280);
+  }
+  function centerOn(n) {
+    var r = view.getBoundingClientRect();
+    var panelW = $('panel').classList.contains('show') && r.width > 760 ? 390 : 0;
+    cam.x = (r.width - panelW) / 2 - (n.tx + W / 2) * cam.k;
+    cam.y = r.height / 2 - (n.ty + 25) * cam.k;
+    applyCam();
+  }
+
+  /* ---------------- botones ---------------- */
+  $('b-expand').addEventListener('click', function () { nodes.forEach(function (n) { n.open = true; }); if (listMode) buildList(); relayout(); setTimeout(fit, reduce ? 0 : 280); });
+  $('b-collapse').addEventListener('click', function () { nodes.forEach(function (n) { n.open = n.depth < 1; }); if (listMode) buildList(); relayout(); setTimeout(fit, reduce ? 0 : 280); });
+
+  /* ---------------- búsqueda ---------------- */
+  function norm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  $('buscar').addEventListener('input', function () {
+    var q = norm(this.value.trim());
+    nodes.forEach(function (n) { n.el.classList.remove('hit', 'dim'); });
+    if (!q) { if (listMode) buildList(); return; }
+    var hits = nodes.filter(function (n) { return norm(n.label + ' ' + n.text.replace(/<[^>]+>/g, '')).indexOf(q) !== -1; });
+    hits.forEach(function (n) { for (var p = n.parent; p; p = p.parent) p.open = true; });
+    relayout();
+    nodes.forEach(function (n) { var h = hits.indexOf(n) !== -1; n.el.classList.toggle('hit', h); n.el.classList.toggle('dim', !h && hits.length > 0); });
+    if (listMode) buildList(q);
+    else if (hits.length) setTimeout(fit, reduce ? 0 : 280);
+  });
+  $('buscar').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { var h = nodes.filter(function (n) { return n.el.classList.contains('hit'); })[0]; if (h) reveal(h); }
+  });
+
+  /* ---------------- vista de lista ---------------- */
+  var listMode = false;
+  function openListPath(n) {
+    var el = document.querySelector('[data-list="' + n.id + '"]');
+    for (var d = el && el.closest('details'); d; d = d.parentElement.closest('details')) d.open = true;
+    if (el) el.scrollIntoView({ block: 'center' });
+  }
+  function buildList(q) {
+    var inner = $('list-inner'); inner.innerHTML = '';
+    (function add(n, host) {
+      var match = q && norm(n.label).indexOf(q) !== -1;
+      var btn = '<button type="button" class="item" data-list="' + n.id + '"' + (match ? ' style="color:var(--hit)"' : '') + '>' + esc(n.label) + '</button>';
+      if (n.children.length) {
+        var d = document.createElement('details');
+        d.open = n.open;
+        d.innerHTML = '<summary>' + btn + (n.children.length ? ' <span class="sub">· ' + n.children.length + '</span>' : '') + '</summary>';
+        d.addEventListener('toggle', function () { n.open = d.open; });
+        host.appendChild(d);
+        n.children.forEach(function (c) { add(c, d); });
+      } else {
+        var div = document.createElement('div'); div.className = 'leaf'; div.innerHTML = btn; host.appendChild(div);
+      }
+    })(DATA, inner);
+  }
+  $('list-inner').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-list]');
+    if (!b) return;
+    e.preventDefault();
+    var d = b.parentElement.tagName === 'SUMMARY' ? b.parentElement.parentElement : null;
+    if (d) d.open = !d.open;
+    select(byId[b.getAttribute('data-list')]);
+  });
+  function setMode(list) {
+    listMode = list;
+    $('v-map').setAttribute('aria-pressed', String(!list));
+    $('v-list').setAttribute('aria-pressed', String(list));
+    $('list').hidden = !list;
+    view.style.display = list ? 'none' : '';
+    ['b-zin', 'b-zout', 'b-fit'].forEach(function (id) { $(id).hidden = list; });
+    // la ficha vive dentro del lienzo; en modo lista la movemos al cuerpo
+    var panel = $('panel');
+    (list ? document.body : view).appendChild(panel);
+    panel.style.position = list ? 'fixed' : '';
+    if (list) buildList(); else { relayout(); setTimeout(fit, 30); }
+    store.set('al-map-mode', list ? 'list' : 'map');
+  }
+  $('v-map').addEventListener('click', function () { setMode(false); });
+  $('v-list').addEventListener('click', function () { setMode(true); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePanel();
+    if (e.target.tagName === 'INPUT') return;
+    if (e.key === '+' || e.key === '=') $('b-zin').click();
+    if (e.key === '-') $('b-zout').click();
+    if (e.key === '0') fit();
+  });
+  window.addEventListener('resize', function () { if (!listMode) fit(); });
+
+  /* ---------------- inicio ---------------- */
+  layout();
+  nodes.forEach(function (n) { n.x = n.tx; n.y = n.ty; });
+  draw();
+  fit();
+  if (store.get('al-map-mode') === 'list') setMode(true);
+})();
+</script>
+</body>
+</html>
