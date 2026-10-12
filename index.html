@@ -7,7 +7,7 @@
 <meta name="description" content="Espacios vectoriales y espacios con producto interno: teoría paso a paso, ejemplos resueltos y práctica resuelta.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <script>
   window.MathJax = {
     tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
@@ -352,6 +352,14 @@ body.menu-open .scrim { opacity: 1; pointer-events: auto; }
   .box { padding: 14px 14px; }
   .entry { grid-template-columns: minmax(0, 1fr); }
 }
+
+.estado[hidden] { display: none; }
+.estado { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.estado.error { color: var(--bad); }
+.estado button { border: 1px solid currentColor; border-radius: 6px; background: transparent; color: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1s ease-in-out infinite alternate; }
+@keyframes pulse { from { opacity: .25; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
 .empty { padding: 10px 12px; color: var(--muted); font-size: 14px; }
 
 ol.plist { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 0; counter-reset: p; }
@@ -375,6 +383,7 @@ ol.plist .w { color: var(--muted); }
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span class="hide-sm">Menú</span>
     </button>
     <div class="crumb" id="crumb" aria-live="polite"></div>
+    <div class="estado" id="estado" role="status" hidden></div>
     <div class="tools">
       <button class="icon-btn hide-sm" id="btn-fs-down" type="button" aria-label="Texto más pequeño" title="Texto más pequeño">A−</button>
       <button class="icon-btn hide-sm" id="btn-fs-up" type="button" aria-label="Texto más grande" title="Texto más grande">A+</button>
@@ -1968,6 +1977,7 @@ ol.plist .w { color: var(--muted); }
 (function () {
   'use strict';
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var cur = 0, ready = false;
   var byId = {};
   // El id pasa a data-id para que el navegador no desplace la página al cambiar el #enlace.
   slides.forEach(function (s, i) { s.dataset.id = s.id; s.removeAttribute('id'); byId[s.dataset.id] = i; });
@@ -2095,9 +2105,38 @@ ol.plist .w { color: var(--muted); }
       typeset(s).then(function () { idle(tick); });
     })();
   }
-  function onMath() { typeset(slides[cur]); fitMath(slides[cur]); setTimeout(typesetRest, 400); }
-  if (window.MathJax && window.MathJax.typesetPromise) onMath();
-  else document.addEventListener('mathjax-ready', onMath);
+  // Las fórmulas pueden terminar de cargar antes o después que la página: esperamos a ambas.
+  var mathOk = false;
+  function onMath() {
+    if (mathOk) return;
+    mathOk = true;
+    clearTimeout(mathTimer);
+    setStatus('');
+    if (!ready) return;
+    typeset(slides[cur]); fitMath(slides[cur]); setTimeout(typesetRest, 400);
+  }
+  var estado = $('estado');
+  function setStatus(kind) {
+    estado.hidden = !kind;
+    estado.className = 'estado ' + kind;
+    if (kind === 'loading') estado.innerHTML = '<span class="pulse"></span>Cargando fórmulas…';
+    if (kind === 'error') estado.innerHTML = 'Las fórmulas no cargaron. <button type="button" id="reintentar">Reintentar</button>';
+  }
+  function loadMath() {
+    var sc = document.createElement('script');
+    sc.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js';
+    sc.async = true;
+    document.head.appendChild(sc);
+  }
+  var mathTimer = setTimeout(function () { if (!mathOk) setStatus('error'); }, 12000);
+  estado.addEventListener('click', function (e) {
+    if (e.target.id !== 'reintentar') return;
+    setStatus('loading');
+    mathTimer = setTimeout(function () { if (!mathOk) setStatus('error'); }, 12000);
+    if (!(window.MathJax && window.MathJax.typesetPromise)) loadMath();
+  });
+  document.addEventListener('mathjax-ready', onMath);
+  if (window.MathJax && window.MathJax.typesetPromise) onMath(); else setStatus('loading');
 
   /* ---------- índice ---------- */
   var tocButtons = [];
@@ -2194,7 +2233,6 @@ ol.plist .w { color: var(--muted); }
   }
 
   /* ---------- navegación ---------- */
-  var cur = 0;
   var groupIdx = {};
   slides.forEach(function (s) {
     var g = s.dataset.group;
@@ -2268,7 +2306,13 @@ ol.plist .w { color: var(--muted); }
   var start = fromHash();
   if (start === undefined) { var last = store.get('al-last'); start = last && byId[last] !== undefined ? byId[last] : 0; }
   slides[0].hidden = true;
-  goTo(start, location.hash ? true : false);
+  try {
+    goTo(start, location.hash ? true : false);
+  } catch (err) {
+    cur = 0; slides.forEach(function (s, i) { s.hidden = i !== 0; });
+  }
+  ready = true;
+  if (mathOk) { mathOk = false; onMath(); }
 })();
 </script>
 </body>
