@@ -360,6 +360,46 @@ body.menu-open .scrim { opacity: 1; pointer-events: auto; }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1s ease-in-out infinite alternate; }
 @keyframes pulse { from { opacity: .25; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+
+/* notas emergentes «¿Qué significa…?» */
+details.nota { margin: 14px 0; }
+details.nota > summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  font-size: .9em; color: var(--accent); padding: 4px 12px 4px 6px;
+  border: 1px dashed var(--line); border-radius: 999px; transition: background .15s, border-color .15s;
+}
+details.nota > summary::-webkit-details-marker { display: none; }
+details.nota > summary::before {
+  content: "?"; width: 20px; height: 20px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font: 600 12px/1 var(--f-body);
+  background: var(--def-bg); color: var(--accent);
+}
+details.nota > summary mjx-container { margin-right: -3px; }
+details.nota > summary:hover { border-color: var(--accent); background: var(--def-bg); }
+details.nota[open] > summary { border-style: solid; border-color: var(--accent); background: var(--def-bg); }
+details.nota[open] > summary::before { content: "×"; }
+.nota-body { margin-top: 10px; padding: 14px 18px; border-radius: 10px; background: var(--def-bg); font-size: .95em; animation: enter .25s ease both; }
+.nota-body > :last-child { margin-bottom: 0; }
+.nota-body .fig { margin: 8px auto; }
+@media (prefers-reduced-motion: reduce) { .nota-body { animation: none; } }
+
+/* panel de símbolos */
+.glosa {
+  position: fixed; top: 0; bottom: 0; right: 0; z-index: 30;
+  width: min(420px, 92vw); background: var(--sheet); border-left: 1px solid var(--line);
+  transform: translateX(102%); transition: transform .25s ease;
+  display: grid; grid-template-rows: auto 1fr; box-shadow: -30px 0 60px -40px var(--shadow);
+}
+body.glosa-open .glosa { transform: none; }
+body.glosa-open .scrim { opacity: 1; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .glosa { transition: none; } }
+.glosa-body { overflow-y: auto; padding: 0 18px 24px; }
+.glosa h3 { font: 500 11.5px var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 18px 0 6px; }
+.glosa dl { margin: 0; display: grid; grid-template-columns: 74px minmax(0, 1fr); }
+.glosa dt, .glosa dd { margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.glosa dt { text-align: center; }
+.glosa dd { font-size: 14.5px; padding-left: 10px; }
+.glosa dd b { font-weight: 600; }
 .empty { padding: 10px 12px; color: var(--muted); font-size: 14px; }
 
 ol.plist { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 0; counter-reset: p; }
@@ -385,6 +425,7 @@ ol.plist .w { color: var(--muted); }
     <div class="crumb" id="crumb" aria-live="polite"></div>
     <div class="estado" id="estado" role="status" hidden></div>
     <div class="tools">
+      <button class="icon-btn" id="btn-simbolos" type="button" aria-label="Ver qué significa cada símbolo" title="Símbolos (S)" aria-controls="glosa" aria-expanded="false"><span style="font-family:var(--f-display);font-size:18px;line-height:1">Σ</span><span class="hide-sm">Símbolos</span></button>
       <button class="icon-btn hide-sm" id="btn-fs-down" type="button" aria-label="Texto más pequeño" title="Texto más pequeño">A−</button>
       <button class="icon-btn hide-sm" id="btn-fs-up" type="button" aria-label="Texto más grande" title="Texto más grande">A+</button>
       <button class="icon-btn" id="btn-theme" type="button" aria-label="Cambiar entre tema claro y oscuro" title="Tema claro u oscuro">
@@ -441,6 +482,7 @@ ol.plist .w { color: var(--muted); }
     <p>Sea $\mathbb{R}$ los números reales y $V$ un conjunto no vacío con operaciones de <b>adición</b> y <b>multiplicación escalar</b> que asignan a cada $u, v \in V$ una suma $u+v\in V$ y a cualquier $u\in V$, $\alpha\in\mathbb{R}$ un producto $\alpha u\in V$.</p>
     <p>Entonces diremos que $V$ es un <b>espacio vectorial (E.V.)</b> sobre $\mathbb{R}$ si se cumplen las 8 propiedades que veremos a continuación.</p>
   </div>
+  <details class="nota"><summary>¿Qué significan $\in$ y $\alpha$?</summary><div class="nota-body"><p>$u\in V$ se lee <b>«u pertenece a V»</b>: u es uno de los elementos de V.</p><p>$\alpha$ (alfa), $\beta$ (beta), $\gamma$ (gamma)… son solo <b>nombres para números reales</b> (los «escalares»).</p></div></details>
   <div class="box simple">
     <span class="label">En palabras simples</span>
     <p>Un espacio vectorial es un conjunto de objetos, que llamamos <b>vectores</b>, que se pueden <b>sumar</b> entre sí y <b>multiplicar por números reales</b>. El resultado de esas operaciones siempre queda dentro del mismo conjunto, y las operaciones cumplen 8 reglas.</p>
@@ -454,6 +496,7 @@ ol.plist .w { color: var(--muted); }
 <section class="slide" id="t4-prop1" data-group="t4" data-sec="4.1 Espacio vectorial" data-title="Propiedades de la suma (1–4)" data-kind="def">
   <p class="eyebrow"><span class="kind k-def">Propiedades</span><span class="src">Diapositiva 4.1</span></p>
   <h2>Propiedades 1 a 4: la suma</h2>
+  <details class="nota"><summary>¿Qué significan $\forall$ y $\exists$?</summary><div class="nota-body"><p>$\forall$ se lee <b>«para todo»</b> y $\exists$ se lee <b>«existe»</b>.</p><p>Por ejemplo, la propiedad 2 dice: <i>existe un vector 0 en V tal que, para todo u de V, u + 0 = u</i>.</p></div></details>
   <ol class="plist">
     <li><div><div class="math">$(\forall u,v,w\in V)\;\big(u+(v+w)\big)=\big((u+v)+w\big)$</div><span class="nm">Asociativa.</span> <span class="w">No importa cómo agrupes los vectores al sumar.</span></div></li>
     <li><div><div class="math">$(\exists\, 0\in V)(\forall u\in V)\;(u+0=0+u=u)$</div><span class="nm">Vector cero (neutro).</span> <span class="w">Existe un vector cero que, al sumarlo, no cambia nada.</span></div></li>
@@ -553,6 +596,7 @@ ol.plist .w { color: var(--muted); }
     <p><b>i)</b> $W$ es cerrado bajo la adición vectorial: $\;u,v\in W\;\Longrightarrow\;u+v\in W$</p>
     <p><b>ii)</b> $W$ es cerrado bajo la multiplicación escalar: $\;\forall\alpha\in\mathbb{R},\ \forall u\in W\;\Longrightarrow\;\alpha u\in W$</p>
   </div>
+  <details class="nota"><summary>¿Qué significa $\Longrightarrow$?</summary><div class="nota-body"><p>Se lee <b>«entonces»</b> o «implica». $u,v\in W\Rightarrow u+v\in W$ dice: <i>si u y v están en W, entonces su suma también está en W</i>.</p></div></details>
   <div class="box simple">
     <span class="label">En palabras simples</span>
     <p>Un subespacio es una parte de $V$ que también es un espacio vectorial. No hace falta revisar las 8 propiedades: basta ver que <b>sumar</b> y <b>multiplicar por números</b> no te sacan de $W$.</p>
@@ -611,6 +655,7 @@ ol.plist .w { color: var(--muted); }
     <p>Sea $V$ un E.V. sobre $\mathbb{R}$ y sea $A=\{v_1,v_2,\dots,v_n\}$ una familia de vectores en $V$. Un vector $v\in V$ es <b>combinación lineal (C.L.)</b> de la familia $A\subseteq V$ si existen $n$ escalares $\alpha_1,\alpha_2,\dots,\alpha_n$ tales que:</p>
     <div class="math">$$v=\sum_{i=1}^{n}\alpha_i v_i=\alpha_1v_1+\alpha_2v_2+\dots+\alpha_nv_n$$</div>
   </div>
+  <details class="nota"><summary>¿Qué significa $\sum$?</summary><div class="nota-body"><p>$\sum$ (sigma) es una forma corta de escribir una <b>suma</b>. El índice $i$ va tomando los valores $1,2,\dots,n$:</p><div class="math">$$\sum_{i=1}^{n}\alpha_iv_i=\alpha_1v_1+\alpha_2v_2+\dots+\alpha_nv_n$$</div></div></details>
   <div class="box simple"><span class="label">En palabras simples</span>
     <p>$v$ es combinación lineal de $A$ si puedes <b>armar</b> $v$ con los vectores de $A$: multiplicando cada uno por un número y sumando.</p></div>
   <div class="box obs"><span class="label">Método</span>
@@ -716,6 +761,8 @@ ol.plist .w { color: var(--muted); }
   </div>
   <div class="box simple"><span class="label">En palabras simples</span>
     <p><b>L.I.:</b> ningún vector sobra; no se puede armar uno de ellos con los demás.<br><b>L.D.:</b> al menos uno sobra, porque se puede escribir como combinación lineal de los otros.</p></div>
+
+  <details class="nota"><summary>¿Por qué se iguala a cero?</summary><div class="nota-body"><p>Si se puede llegar a $0$ con algún $\alpha\neq0$, se puede despejar ese vector y escribirlo con los demás: <b>ese vector sobra</b>. Ejemplo: $-2v_1+v_2+v_3=0\Rightarrow v_3=2v_1-v_2$.</p><p>$0_V$ es el vector cero del espacio, por ejemplo $(0,0,0)$ en $\mathbb{R}^3$.</p></div></details>
 </section>
 
 <section class="slide" id="t4-li-met" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Cómo se decide" data-kind="obs">
@@ -728,6 +775,9 @@ ol.plist .w { color: var(--muted); }
     <li><div><span class="nm">Atajo por cantidad.</span> <span class="w">Si hay más vectores que la dimensión del espacio (por ejemplo, 3 vectores en $\mathbb{R}^2$), la familia es L.D. seguro.</span></div></li>
   </ol>
   <div class="box obs"><span class="label">Polinomios y matrices</span><p>Se trabaja igual: cada polinomio se representa por sus coeficientes y cada matriz por sus entradas.</p></div>
+
+
+  <details class="nota"><summary>¿Cómo se calcula un determinante 3×3?</summary><div class="nota-body"><p>Se desarrolla por la primera fila, con signos <b>$+\;-\;+$</b>. Cada número se multiplica por el determinante 2×2 que queda al tapar su fila y su columna:</p><div class="math">$$\begin{vmatrix}a&b&c\\d&e&f\\g&h&i\end{vmatrix}=a(ei-fh)-b(di-fg)+c(dh-eg)$$</div><p>Y el 2×2: $\begin{vmatrix}a&b\\c&d\end{vmatrix}=ad-bc$.</p></div></details>
 </section>
 
 <section class="slide" id="t4-b8-2a" data-group="t4" data-sec="4.4 Dependencia e independencia" data-title="Bloque 8 · 2a (ℝ³)" data-kind="ex">
@@ -902,6 +952,9 @@ ol.plist .w { color: var(--muted); }
     <li><div><span class="nm">Leer la base.</span> <span class="w">Los vectores que acompañan a cada variable libre forman la base.</span></div></li>
     <li><div><span class="nm">Contar.</span> <span class="w">La dimensión es el número de variables libres: (número de variables) − (número de ecuaciones independientes).</span></div></li>
   </ol>
+
+
+  <details class="nota"><summary>¿Qué es una «variable libre»?</summary><div class="nota-body"><p>Es la que <b>no despejaste</b>: puede tomar cualquier valor. Cada variable libre aporta un vector a la base.</p><p>Ejemplo: en $c=a+b$, las libres son $a$ y $b$ $\Rightarrow$ dimensión 2.</p></div></details>
 </section>
 
 <section class="slide" id="t4-bsub-ej1" data-group="t4" data-sec="4.8 Base y dimensión de subespacios" data-title="Ejemplo 1 (ℝ³)" data-kind="ex">
@@ -1119,6 +1172,8 @@ ol.plist .w { color: var(--muted); }
   </ol>
   <div class="box simple"><span class="label">En palabras simples</span><p>El producto interno toma <b>dos vectores</b> y devuelve <b>un número</b>. Con ese número mediremos longitudes, distancias y perpendicularidad.</p></div>
   <p class="muted small">En la diapositiva la propiedad 2 aparece como $\langle u,v\rangle=\langle u,v\rangle$; lo correcto es la simetría $\langle u,v\rangle=\langle v,u\rangle$.</p>
+
+  <details class="nota"><summary>¿Qué significa $\langle u,v\rangle$?</summary><div class="nota-body"><p>Se lee <b>«producto interno de u y v»</b>. Entran dos vectores y sale <b>un número</b>, no un vector.</p><p>«$c$ escalar» quiere decir que $c$ es un número real.</p></div></details>
 </section>
 
 <section class="slide" id="t5-std-rn" data-group="t5" data-sec="5.1 Producto interno" data-title="P.I. estándar en ℝⁿ" data-kind="ex">
@@ -1128,6 +1183,7 @@ ol.plist .w { color: var(--muted); }
     <p>Si $u=(u_1,u_2,\dots,u_n)$ y $v=(v_1,v_2,\dots,v_n)$, entonces</p>
     <div class="math">$$\langle u,v\rangle=u_1v_1+u_2v_2+\dots+u_nv_n$$</div>
     <p>es un producto interno en $\mathbb{R}^n$ llamado <b>producto interno estándar</b>.</p></div>
+  <details class="nota"><summary>¿Es el producto punto?</summary><div class="nota-body"><p>Sí. Es el mismo «producto punto» $u\cdot v$ de vectores que se ve en geometría: multiplicar posición por posición y sumar.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>Se multiplican las componentes que están en la misma posición y se suman los resultados.</p></div>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Ejemplo con $u=(1,3,4)$ y $v=(2,4,5)$</span><div class="math">$$\langle u,v\rangle=1\cdot2+3\cdot4+4\cdot5=2+12+20=34$$</div></div></li>
@@ -1141,6 +1197,7 @@ ol.plist .w { color: var(--muted); }
     <p>Si $P(t),Q(t)\in P_n(\mathbb{R})$, entonces</p>
     <div class="math">$$\langle P(t),Q(t)\rangle=\int_0^1P(t)\,Q(t)\,dt$$</div>
     <p>es un P.I. estándar en $P_n(\mathbb{R})$.</p></div>
+  <details class="nota"><summary>¿Cómo se lee $\int_0^1\dots\,dt$?</summary><div class="nota-body"><p>Es la <b>integral de 0 a 1</b>. Para polinomios basta esta regla, término a término:</p><div class="math">$$\int_0^1 t^n\,dt=\frac{1}{n+1}$$</div><p>Así: $\int_0^1 1\,dt=1$, $\;\int_0^1 t\,dt=\tfrac12$, $\;\int_0^1 t^2\,dt=\tfrac13$, $\;\int_0^1 t^3\,dt=\tfrac14$.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>Multiplicamos los dos polinomios e integramos el resultado entre $0$ y $1$.</p></div>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Ejemplo con $P(t)=t$ y $Q(t)=t+1$</span><div class="math">$$\langle t,\,t+1\rangle=\int_0^1(t^2+t)\,dt=\left[\frac{t^3}{3}+\frac{t^2}{2}\right]_0^1=\frac13+\frac12=\frac56$$</div></div></li>
@@ -1154,6 +1211,7 @@ ol.plist .w { color: var(--muted); }
     <p>Si $A,B\in M_n(\mathbb{R})$, entonces</p>
     <div class="math">$$\langle A,B\rangle=\operatorname{tr}(A^tB)$$</div>
     <p>donde $\operatorname{tr}(A)=$ traza de $A=a_{11}+a_{22}+\dots+a_{nn}$, es un P.I. estándar en $M_n(\mathbb{R})$.</p></div>
+  <details class="nota"><summary>¿Qué significan $A^t$ y $\operatorname{tr}$?</summary><div class="nota-body"><p>$A^t$ es la <b>transpuesta</b>: las filas pasan a ser columnas.</p><div class="math">$$\begin{pmatrix}2&3\\1&-4\end{pmatrix}^t=\begin{pmatrix}2&1\\3&-4\end{pmatrix}$$</div><p>$\operatorname{tr}$ es la <b>traza</b>: la suma de la diagonal principal (de arriba a la izquierda hacia abajo a la derecha).</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>La traza es la suma de la diagonal. En la práctica, $\operatorname{tr}(A^tB)$ da lo mismo que multiplicar las entradas que están en la misma posición y sumar.</p></div>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Ejemplo con $A=\begin{pmatrix}2&3\\1&-4\end{pmatrix}$ y $B=\begin{pmatrix}-4&7\\1&-4\end{pmatrix}$</span>
@@ -1167,6 +1225,7 @@ ol.plist .w { color: var(--muted); }
   <h2>Espacio con producto interno</h2>
   <div class="box def"><span class="label">Definición</span>
     <p>Un E.V. real en el cual se ha definido un P.I. se denomina <b>espacio vectorial con producto interno</b>. Si el espacio es de dimensión finita se denomina <b>espacio euclidiano</b>.</p></div>
+  <details class="nota"><summary>¿Qué es «dimensión finita»?</summary><div class="nota-body"><p>Que sus bases tienen una cantidad fija de vectores: $\mathbb{R}^3$ tiene 3, $P_2$ tiene 3, $M_2$ tiene 4.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>$\mathbb{R}^n$, $P_n(\mathbb{R})$ y $M_n(\mathbb{R})$, cada uno con su producto interno estándar, son espacios euclidianos: tienen dimensión finita y en ellos podemos medir.</p></div>
 </section>
 
@@ -1177,6 +1236,13 @@ ol.plist .w { color: var(--muted); }
   <div class="box def"><span class="label">Definición</span>
     <p>Sea $V$ un E.V. con P.I. y $v\in V$; entonces se define la <b>longitud</b> (magnitud, tamaño, módulo, norma) de $v$ como</p>
     <div class="math">$$|v|=\sqrt{\langle v,v\rangle}$$</div></div>
+  <details class="nota"><summary>¿Qué significa $|v|$? (Pitágoras)</summary><div class="nota-body"><p>$|v|$ se lee <b>«norma de v»</b> (también módulo, longitud o tamaño). En $\mathbb{R}^2$ y $\mathbb{R}^3$ es el <b>teorema de Pitágoras</b>: el vector es la hipotenusa y sus componentes son los catetos.</p><figure class="fig"><svg viewBox="0 0 220 170" width="220" role="img" aria-label="Triángulo rectángulo de catetos 3 y 4 e hipotenusa 5">
+<defs><marker id="mkp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="v3"/></marker></defs>
+<line class="dash" x1="30" y1="140" x2="120" y2="140"/><line class="dash" x1="120" y1="140" x2="120" y2="20"/>
+<path class="dash" d="M110,140 L110,130 L120,130"/>
+<line class="v3" x1="30" y1="140" x2="120" y2="20" stroke-width="2.4" marker-end="url(#mkp)"/>
+<text x="66" y="158">3</text><text x="128" y="85">4</text><text x="20" y="72">|v| = 5</text></svg>
+<figcaption>$v=(3,4)$: la norma es la hipotenusa. $\;|v|=\sqrt{3^2+4^2}=\sqrt{25}=5$</figcaption></figure><p class="muted small">Ojo: las mismas barras $|\;|$ también se usan para el valor absoluto de un número y para el determinante. Lo que hay dentro dice cuál es.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>Hacemos el producto interno del vector consigo mismo y sacamos raíz cuadrada. En $\mathbb{R}^n$ es el teorema de Pitágoras.</p></div>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">En $\mathbb{R}^3$</span><div class="math">$$\begin{gathered}|(1,3,4)|=\sqrt{1^2+3^2+4^2}=\sqrt{26}\\ |(0,1,-1)|=\sqrt{0+1+1}=\sqrt2\end{gathered}$$</div></div></li>
@@ -1190,6 +1256,7 @@ ol.plist .w { color: var(--muted); }
   <div class="box def"><span class="label">Definición</span>
     <p>Si $V$ es un E.V. con P.I., se define la <b>distancia</b> entre dos vectores $u,v$ de $V$ como</p>
     <div class="math">$$d(u,v)=|u-v|$$</div></div>
+  <details class="nota"><summary>¿Qué significa $d(u,v)$?</summary><div class="nota-body"><p>Se lee <b>«distancia entre u y v»</b>. La resta $u-v$ es la flecha que va de la punta de $v$ a la punta de $u$; su norma (Pitágoras otra vez) es lo que miden por separado.</p><p>El orden no importa: $d(u,v)=d(v,u)$, porque los números se elevan al cuadrado.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>Restamos los vectores y medimos la norma de la resta.</p></div>
   <div class="box obs"><span class="label">Receta</span><p><b>1.</b> Calcular $u-v$. <b>2.</b> Calcular $\langle u-v,\,u-v\rangle$. <b>3.</b> Sacar raíz cuadrada.</p></div>
 </section>
@@ -1209,6 +1276,7 @@ ol.plist .w { color: var(--muted); }
   <p class="eyebrow"><span class="kind k-ex">Ejemplo resuelto</span><span class="src">Ejercicios bloque 10 · 1b</span></p>
   <h2>Distancia entre $p$ y $q$</h2>
   <div class="box ex"><span class="label">Enunciado</span><div class="math">$$p(t)=3t^2-2t+1,\qquad q(t)=t^2-3t+2$$</div></div>
+    <details class="nota"><summary>¿Cómo se integra un polinomio de 0 a 1?</summary><div class="nota-body"><p>Término a término: el coeficiente se divide por (exponente + 1).</p><div class="math">$$\int_0^1 4t^4\,dt=\frac45,\qquad\int_0^1 4t^3\,dt=\frac44=1,\qquad\int_0^1 1\,dt=1$$</div></div></details>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$p-q=2t^2+t-1$$</div></div></li>
     <li class="step"><div class="body"><span class="st">Elevamos al cuadrado</span><div class="math">$$(2t^2+t-1)^2=4t^4+4t^3-3t^2-2t+1$$</div></div></li>
@@ -1235,6 +1303,7 @@ ol.plist .w { color: var(--muted); }
   <div class="box def"><span class="label">Definición</span>
     <p>Sea $V$ un E.V. con P.I.; los vectores $u,v\in V$ son <b>ortogonales</b> (o perpendiculares) si</p>
     <div class="math">$$\langle u,v\rangle=0$$</div></div>
+  <details class="nota"><summary>¿Por qué «producto interno = 0» es perpendicular?</summary><div class="nota-body"><p>En el plano y el espacio, $\langle u,v\rangle=|u|\,|v|\cos\theta$, donde $\theta$ es el ángulo entre ellos. Da cero cuando $\cos\theta=0$, es decir, cuando $\theta=90^\circ$.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>Dos vectores son ortogonales cuando su producto interno da cero. En el plano o el espacio, eso significa que forman un ángulo recto.</p></div>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Ejemplo</span><div class="math">$$\langle(0,1,-1),\,(0,1,1)\rangle=0+1-1=0$$</div><p>Son ortogonales.</p></div></li>
@@ -1258,6 +1327,7 @@ ol.plist .w { color: var(--muted); }
   <h2>Conjunto ortonormal</h2>
   <div class="box def"><span class="label">Definición</span>
     <p>Sea $V$ un E.V. con P.I. Un conjunto $S$ es <b>ortonormal</b> si $S$ es ortogonal y además cada vector de $S$ tiene longitud unitaria.</p></div>
+  <details class="nota"><summary>¿De dónde sale la palabra?</summary><div class="nota-body"><p><b>Orto</b> = recto (90°) y <b>normal</b> = de norma 1. Ortonormal = perpendiculares entre sí y todos de longitud 1.</p></div></details>
   <div class="math">$$\text{Ortonormal}\;=\;\text{ortogonal}\;+\;\text{todos de norma }1$$</div>
   <div class="box ex"><span class="label">Ejemplo de la diapositiva</span><div class="math">$$S=\left\{(1,0,0),\;\left(0,\tfrac{1}{\sqrt2},-\tfrac{1}{\sqrt2}\right),\;\left(0,\tfrac{1}{\sqrt2},\tfrac{1}{\sqrt2}\right)\right\}$$</div></div>
   <ol class="steps">
@@ -1273,6 +1343,7 @@ ol.plist .w { color: var(--muted); }
   <div class="box obs"><span class="label">Observación</span>
     <p>Si $v$ es un vector distinto de cero de un E.V. con P.I., siempre podemos hallar un vector de longitud unitaria (denominado <b>vector unitario</b>) en la misma dirección de $v$. Para esto se toma</p>
     <div class="math">$$u=\frac{v}{|v|}$$</div></div>
+  <details class="nota"><summary>¿Cómo se divide un vector por un número?</summary><div class="nota-body"><p>Se divide <b>cada componente</b> por ese número: $\dfrac{(0,1,-1)}{\sqrt2}=\left(0,\tfrac1{\sqrt2},-\tfrac1{\sqrt2}\right)$.</p><p>Si te piden racionalizar: $\tfrac{1}{\sqrt2}=\tfrac{\sqrt2}{2}$. Es el mismo número.</p></div></details>
   <div class="box simple"><span class="label">En palabras simples</span><p>Dividir un vector por su norma lo «encoge» o «estira» hasta que mida 1, sin cambiar su dirección. A esto se le llama <b>normalizar</b>.</p></div>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Normalizamos $v=(0,1,-1)$</span><div class="math">$$|v|=\sqrt2\;\Rightarrow\;u=\frac{(0,1,-1)}{\sqrt2}=\left(0,\tfrac{1}{\sqrt2},-\tfrac{1}{\sqrt2}\right)$$</div><p>Así se obtuvo el conjunto ortonormal de la diapositiva anterior.</p></div></li>
@@ -1289,11 +1360,14 @@ ol.plist .w { color: var(--muted); }
   <div class="math">$$\begin{aligned}z_1&=w_1\\[2pt] z_2&=w_2-\frac{\langle w_2,z_1\rangle}{|z_1|^2}\,z_1\\[2pt] z_3&=w_3-\frac{\langle w_3,z_1\rangle}{|z_1|^2}\,z_1-\frac{\langle w_3,z_2\rangle}{|z_2|^2}\,z_2\\ &\;\;\vdots\end{aligned}$$</div>
   <p>luego $S'=\{z_1,z_2,\dots,z_n\}$ es una base ortogonal de $W$.</p>
   <div class="box simple"><span class="label">En palabras simples</span><p>A cada vector nuevo le quitamos «la sombra» (la proyección) que hace sobre los vectores que ya arreglamos. Lo que queda es perpendicular a todos ellos.</p></div>
+
+  <details class="nota"><summary>¿Qué significan $|z_1|^2$ y la fracción?</summary><div class="nota-body"><p>$|z_1|^2=\langle z_1,z_1\rangle$: es la norma <b>sin sacar la raíz</b> (suma de cuadrados).</p><p>$\dfrac{\langle w_2,z_1\rangle}{|z_1|^2}\,z_1$ es la <b>sombra</b> (proyección) de $w_2$ sobre $z_1$. Al restarla, queda solo la parte perpendicular.</p><p>$W\neq\{0_V\}$ quiere decir que el subespacio no es únicamente el vector cero.</p></div></details>
 </section>
 
 <section class="slide" id="t5-gs-norm" data-group="t5" data-sec="5.4 Gram–Schmidt" data-title="Normalizar al final" data-kind="thm">
   <p class="eyebrow"><span class="kind k-thm">Teorema (continuación)</span><span class="src">Diapositiva 5.2</span></p>
   <h2>De ortogonal a ortonormal</h2>
+  <details class="nota"><summary>¿Qué son $S$, $S'$ y $S''$?</summary><div class="nota-body"><p>Solo nombres: $S$ es la base original, $S'$ la base <b>ortogonal</b> (paso 1, los $z$) y $S''$ la base <b>ortonormal</b> (paso 2, los $u$).</p></div></details>
   <p><b>Paso 2.</b> Sea ahora</p>
   <div class="math">$$u_1=\frac{z_1}{|z_1|},\qquad u_2=\frac{z_2}{|z_2|},\qquad u_3=\frac{z_3}{|z_3|},\;\dots$$</div>
   <p>luego $S''=\{u_1,u_2,\dots,u_n\}$ es una <b>base ortonormal</b> de $W$.</p>
@@ -1823,6 +1897,7 @@ ol.plist .w { color: var(--muted); }
   <p class="eyebrow"><span class="kind k-tp">TP 2 · Ejercicio 13(c)</span><span class="src">Teoría 5.1 y 5.2</span></p>
   <h2>Distancia entre $p$ y $q$</h2>
   <div class="box task"><span class="label">Enunciado</span><div class="math">$$p(t)=2t^2+2,\qquad q(t)=t^2+3t-1$$</div></div>
+    <details class="nota"><summary>¿Cómo se integra término a término?</summary><div class="nota-body"><p>$\int_0^1 a\,t^n\,dt=\dfrac{a}{n+1}$. Ejemplo: $\int_0^1 -6t^3\,dt=-\tfrac64$ y $\int_0^1 15t^2\,dt=\tfrac{15}{3}=5$.</p></div></details>
   <ol class="steps">
     <li class="step"><div class="body"><span class="st">Restamos</span><div class="math">$$p-q=t^2-3t+3$$</div></div></li>
     <li class="step"><div class="body"><span class="st">Elevamos al cuadrado</span><div class="math">$$(t^2-3t+3)^2=t^4-6t^3+15t^2-18t+9$$</div></div></li>
@@ -1970,6 +2045,20 @@ ol.plist .w { color: var(--muted); }
   <div class="drawer-foot">
     <label class="switch" for="ver-todo"><span>Mostrar todos los pasos de una vez</span><input type="checkbox" id="ver-todo"></label>
     <a href="mapa-conceptual.html"><span>Mapa conceptual</span><span aria-hidden="true">→</span></a>
+  </div>
+</aside>
+
+<aside class="glosa" id="glosa" aria-label="Símbolos" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Símbolos</h2>
+    <button class="icon-btn" id="glosa-close" type="button" aria-label="Cerrar los símbolos">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="glosa-body" id="glosa-body">
+    <h3>Tema 4 · Espacios vectoriales</h3><dl><dt>$\in$</dt><dd><b>pertenece a</b> («es un elemento de»). $\notin$: no pertenece.</dd><dt>$\subset,\ \subseteq$</dt><dd><b>está dentro de</b> (es subconjunto de).</dd><dt>$\forall$</dt><dd><b>para todo</b>.</dd><dt>$\exists$</dt><dd><b>existe</b>.</dd><dt>$\Rightarrow$</dt><dd><b>entonces</b>, implica.</dd><dt>$\iff$</dt><dd><b>si y solo si</b>: las dos cosas van juntas.</dd><dt>$\{\,\dots\,/\,\dots\}$</dt><dd><b>el conjunto de</b> … <b>tales que</b> …</dd><dt>$\alpha,\beta,\gamma$</dt><dd>alfa, beta, gamma: <b>nombres para números</b> (escalares).</dd><dt>$\sum$</dt><dd><b>suma</b>: $\sum_{i=1}^n\alpha_iv_i=\alpha_1v_1+\dots+\alpha_nv_n$.</dd><dt>$0_V$</dt><dd><b>vector cero</b> del espacio $V$, por ejemplo $(0,0,0)$.</dd><dt>$\mathbb{R}^n$</dt><dd>listas de $n$ números reales: $(a_1,\dots,a_n)$.</dd><dt>$M_{m\times n}$</dt><dd>matrices de $m$ filas y $n$ columnas.</dd><dt>$P_n$</dt><dd>polinomios de grado $n$ o menor.</dd><dt>$\det$</dt><dd><b>determinante</b> (también se escribe con barras $|\;|$).</dd><dt>$\dim$</dt><dd><b>dimensión</b>: cuántos vectores tiene una base.</dd></dl>
+    <h3>Tema 5 · Producto interno</h3><dl><dt>$\langle u,v\rangle$</dt><dd><b>producto interno</b> de $u$ y $v$. Da un número.</dd><dt>$|v|$</dt><dd><b>norma</b>, módulo o longitud. Es Pitágoras: $|(3,4)|=\sqrt{3^2+4^2}=5$.</dd><dt>$|v|^2$</dt><dd>la norma <b>sin raíz</b>: $\langle v,v\rangle$ (suma de cuadrados).</dd><dt>$d(u,v)$</dt><dd><b>distancia</b> entre $u$ y $v$: $|u-v|$.</dd><dt>$\tfrac{v}{|v|}$</dt><dd><b>vector unitario</b>: misma dirección, longitud 1.</dd><dt>$\int_0^1\!dt$</dt><dd><b>integral de 0 a 1</b>. Regla: $\int_0^1t^n\,dt=\frac1{n+1}$.</dd><dt>$A^t$</dt><dd><b>transpuesta</b>: filas pasan a columnas.</dd><dt>$\operatorname{tr}$</dt><dd><b>traza</b>: suma de la diagonal principal.</dd><dt>$\perp$</dt><dd><b>perpendicular</b> (ortogonal): $\langle u,v\rangle=0$.</dd><dt>$z_i,\ u_i$</dt><dd>en Gram–Schmidt: $z$ = vectores ortogonales; $u$ = ya normalizados.</dd></dl>
+    <h3>Abreviaturas</h3><dl><dt style="font-family:var(--f-mono);font-size:13px">E.V.</dt><dd>espacio vectorial</dd><dt style="font-family:var(--f-mono);font-size:13px">C.L.</dt><dd>combinación lineal</dd><dt style="font-family:var(--f-mono);font-size:13px">L.I. / L.D.</dt><dd>linealmente independiente / dependiente</dd><dt style="font-family:var(--f-mono);font-size:13px">S.G.</dt><dd>sistema de generadores</dd><dt style="font-family:var(--f-mono);font-size:13px">P.I.</dt><dd>producto interno</dd></dl>
   </div>
 </aside>
 
@@ -2209,6 +2298,7 @@ ol.plist .w { color: var(--muted); }
   /* ---------- menú ---------- */
   var drawer = $('drawer');
   function openMenu() {
+    if (typeof closeGlosa === 'function') closeGlosa();
     document.body.classList.add('menu-open');
     drawer.setAttribute('aria-hidden', 'false');
     $('btn-menu').setAttribute('aria-expanded', 'true');
@@ -2231,6 +2321,29 @@ ol.plist .w { color: var(--muted); }
     });
     tocButtons.forEach(function (b, i) { b.classList.toggle('cur', i === cur); });
   }
+
+
+  /* ---------- panel de símbolos ---------- */
+  var glosa = $('glosa');
+  function openGlosa() {
+    closeMenu();
+    document.body.classList.add('glosa-open');
+    glosa.setAttribute('aria-hidden', 'false');
+    $('btn-simbolos').setAttribute('aria-expanded', 'true');
+    if (!glosa._typeset && window.MathJax && window.MathJax.typesetPromise) {
+      glosa._typeset = true;
+      chain = chain.then(function () { return window.MathJax.typesetPromise([glosa]); }).catch(function () {});
+    }
+    setTimeout(function () { $('glosa-close').focus({ preventScroll: true }); }, 60);
+  }
+  function closeGlosa() {
+    document.body.classList.remove('glosa-open');
+    glosa.setAttribute('aria-hidden', 'true');
+    $('btn-simbolos').setAttribute('aria-expanded', 'false');
+  }
+  $('btn-simbolos').addEventListener('click', function () { document.body.classList.contains('glosa-open') ? closeGlosa() : openGlosa(); });
+  $('glosa-close').addEventListener('click', closeGlosa);
+  $('scrim').addEventListener('click', closeGlosa);
 
   /* ---------- navegación ---------- */
   var groupIdx = {};
@@ -2275,9 +2388,10 @@ ol.plist .w { color: var(--muted); }
     if (tag === 'input' || tag === 'textarea') { if (e.key === 'Escape') closeMenu(); return; }
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     var menuOpen = document.body.classList.contains('menu-open');
-    if (e.key === 'Escape') { closeMenu(); return; }
+    if (e.key === 'Escape') { closeMenu(); closeGlosa(); return; }
+    if (e.key === 's' || e.key === 'S') { document.body.classList.contains('glosa-open') ? closeGlosa() : openGlosa(); return; }
     if (e.key === 'm' || e.key === 'M') { menuOpen ? closeMenu() : openMenu(); return; }
-    if (menuOpen) return;
+    if (menuOpen || document.body.classList.contains('glosa-open')) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
     else if (e.key === ' ' || e.key === 'Enter') {
